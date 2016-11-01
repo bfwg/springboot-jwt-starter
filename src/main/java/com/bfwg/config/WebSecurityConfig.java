@@ -28,14 +28,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.userDetailsService(inMemoryUserDetailsManager());
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(inMemoryUserDetailsManager());
     }
 
     @Bean
     public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
         final Properties users = new Properties();
-        users.put("user","pass, ROLE_USER,enabled"); //add whatever other user you need
+        users.put("user","123, ROLE_USER,enabled"); //add whatever other user you need
         return new InMemoryUserDetailsManager(users);
     }
 

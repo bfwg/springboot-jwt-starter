@@ -1,0 +1,64 @@
+package com.bfwg.security;
+
+import com.bfwg.model.JwtUser;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
+
+/**
+ * Created by fan.jin on 2016-10-19.
+ */
+
+@Component
+public class JwtUtil {
+
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Value("${jwt.expiration}")
+    private Long expiration;
+
+    @Value("${jwt.header}")
+    private String tokenHeader;
+
+    public String generateToken(UserDetails userDetails) {
+        // Put userDetails into token
+        String jws = Jwts.builder()
+                .setSubject("fanjin1989@gmail.com")
+                .claim("name", "Fan Jin")
+                .claim("hasProsche", true)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
+                .signWith( SignatureAlgorithm.HS512, secret )
+                .compact();
+        return jws;
+    }
+
+    public Claims getClaims(String token) {
+        Claims claims;
+        try {
+            claims = Jwts.parser()
+                    .setSigningKey(secret)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            claims = null;
+        }
+        return claims;
+    }
+
+    public Boolean validateToken(String token) {
+        return !isTokenExpired(token);
+    }
+
+    private Boolean isTokenExpired(String token) {
+        final Date expiration = getClaims(token).getExpiration();
+        return expiration.before(new Date());
+    }
+
+}

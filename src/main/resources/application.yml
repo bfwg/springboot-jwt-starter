@@ -1,9 +1,5 @@
 
 jwt:
   header: Authorization
-  secret: mySecret
+  secret: queenvictoria
   expiration: 604800
-  route:
-    authentication:
-      path: auth
-      refresh: refresh

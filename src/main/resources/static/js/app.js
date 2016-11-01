@@ -4,8 +4,25 @@ $(function () {
   var $getToken = $("#getToken");
   var $getClaim = $("#getClaim");
 
-  $getToken.click(function(){
-    getToken();
+  $("#loginForm").submit(function(e) {
+    var formData = {
+        username: $(this).find('input[name="username"]').val(),
+        password: $(this).find('input[name="password"]').val()
+    };
+    $.ajax({
+      type: "POST",
+      url: "/login",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify(formData),
+      success: function (data) {
+        setJwtToken(data.jwt);
+        showTokenInformation();
+      },
+      error: function (err) {
+        console.log(err);
+      }
+    });
+    e.preventDefault();
   });
 
   $getClaim.click(function(){
@@ -37,21 +54,6 @@ $(function () {
     localStorage.setItem(TOKEN_KEY, token);
   }
 
-  function getToken() {
-    $.ajax({
-      url: "/login",
-      type: "GET",
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function (data) {
-        setJwtToken(data.token);
-        showTokenInformation();
-      },
-      error: function (err) {
-        console.log(err);
-      }
-    });
-  }
 
   function showUserInformation() {
     $.ajax({

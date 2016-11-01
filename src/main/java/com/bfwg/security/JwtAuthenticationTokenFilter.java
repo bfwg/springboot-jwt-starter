@@ -9,13 +9,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -33,7 +30,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private String tokenHeader;
 
     @Autowired
-    JwtTokenUtil jwtTokenUtil;
+    JwtUtil jwtTokenUtil;
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -43,7 +40,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         // authToken.startsWith("Bearer ")
         // String authToken = header.substring(7);
 
-        if (jwtToken != null && this.tokenHeader != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (jwtToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             if (jwtTokenUtil.validateToken(jwtToken)) {
 
                 // stub and grent user authorities
@@ -52,7 +49,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
                 // hardcoded for now
                 // if we pass USER_ROLE, Authenticated will always be true;
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("user", null, grantedAuths);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("user", "123");
                 logger.info("USER AUTHENTICATED " + authentication.toString());
 
                 // set Security Context Authentication

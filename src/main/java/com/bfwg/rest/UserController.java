@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -34,4 +35,11 @@ public class UserController {
                 .orElse( new ResponseEntity<>( HttpStatus.FORBIDDEN) );
     }
 
+    @RequestMapping( method = GET, value = "/whoami" )
+    public ResponseEntity<User> loadMe(Principal user) {
+        System.out.println(user.getName());
+        return Optional.ofNullable( this.userService.findByUsername( "user" ) )
+                .map( u -> new ResponseEntity<>( u, HttpStatus.OK ) )
+                .orElse( new ResponseEntity<>( HttpStatus.I_AM_A_TEAPOT) );
+    }
 }
