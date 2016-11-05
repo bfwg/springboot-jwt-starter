@@ -1,6 +1,5 @@
 package com.bfwg.security;
 
-import com.bfwg.model.JwtUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -23,15 +22,11 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    @Value("${jwt.header}")
-    private String tokenHeader;
-
     public String generateToken(UserDetails userDetails) {
         // Put userDetails into token
         String jws = Jwts.builder()
-                .setSubject("fanjin1989@gmail.com")
-                .claim("name", "Fan Jin")
-                .claim("hasProsche", true)
+                .setIssuer( "springboot-jwt-demo" )
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
                 .signWith( SignatureAlgorithm.HS512, secret )

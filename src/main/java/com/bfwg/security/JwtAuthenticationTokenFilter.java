@@ -32,6 +32,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     JwtUtil jwtTokenUtil;
 
+
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
@@ -43,13 +44,15 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         if (jwtToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             if (jwtTokenUtil.validateToken(jwtToken)) {
 
+                String username = jwtTokenUtil.getClaims(jwtToken).getSubject();
                 // stub and grent user authorities
                 List<GrantedAuthority> grantedAuths = new ArrayList<>();
                 grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
 
+
                 // hardcoded for now
                 // if we pass USER_ROLE, Authenticated will always be true;
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken("user", "123");
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, grantedAuths);
                 logger.info("USER AUTHENTICATED " + authentication.toString());
 
                 // set Security Context Authentication

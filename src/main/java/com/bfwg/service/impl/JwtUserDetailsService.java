@@ -1,16 +1,19 @@
 package com.bfwg.service.impl;
 
-import com.bfwg.model.JwtUser;
+import com.bfwg.model.JwtUserDetail;
 import com.bfwg.model.User;
 import com.bfwg.model.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
 /**
  * Created by fan.jin on 2016-10-31.
  */
+
+@Service
 public class JwtUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
@@ -21,7 +24,7 @@ public class JwtUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         } else {
-            return new JwtUser(user.getId(), user.getUsername(), user.getPassword(), user.getFirstname(), user.getLastname());
+            return user;
         }
     }
 }

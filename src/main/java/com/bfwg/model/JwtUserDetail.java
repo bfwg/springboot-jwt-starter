@@ -12,31 +12,15 @@ import java.util.List;
 /**
  * Created by fan.jin on 2016-10-31.
  */
-public class JwtUser extends User implements UserDetails {
+public class JwtUserDetail extends User implements UserDetails {
 
 
-    public JwtUser() {
-        super();
-    }
+    public void setAuthorities(Collection<Authority> authorities) {
 
-    public JwtUser(
-            Long id,
-            String username,
-            String password,
-            String firstname,
-            String lastname
-    ) {
-        super(
-            id,
-            username,
-            password,
-            firstname,
-            lastname
-        );
     }
 
     @Override
-    public Collection<GrantedAuthority> getAuthorities() {
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> grantedAuths = new ArrayList<>();
         grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
         return grantedAuths;

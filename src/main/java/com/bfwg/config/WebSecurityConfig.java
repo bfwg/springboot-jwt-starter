@@ -1,6 +1,8 @@
 package com.bfwg.config;
 
 import com.bfwg.security.JwtAuthenticationTokenFilter;
+import com.bfwg.service.UserService;
+import com.bfwg.service.impl.JwtUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +24,11 @@ import java.util.Properties;
 
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+
+    @Autowired
+    JwtUserDetailsService jwtUserDetailsService;
+
     @Bean
     public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
         return new JwtAuthenticationTokenFilter();
@@ -29,10 +36,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(inMemoryUserDetailsManager());
+//        auth.userDetailsService(inMemoryUserDetailsManager());
+        auth.userDetailsService(jwtUserDetailsService);
     }
 
-    @Bean
     public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
         final Properties users = new Properties();
         users.put("user","123, ROLE_USER,enabled"); //add whatever other user you need
@@ -62,7 +69,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.css",
                         "/**/*.js"
                 ).permitAll()
-                .antMatchers("/login", "/user/**").permitAll()
+                .antMatchers("/login").permitAll()
                 .anyRequest().authenticated();
 
         // Custom JWT based security filter
