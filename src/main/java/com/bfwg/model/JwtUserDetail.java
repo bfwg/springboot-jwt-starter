@@ -14,18 +14,6 @@ import java.util.List;
  */
 public class JwtUserDetail extends User implements UserDetails {
 
-
-    public void setAuthorities(Collection<Authority> authorities) {
-
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> grantedAuths = new ArrayList<>();
-        grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
-        return grantedAuths;
-    }
-
     @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {

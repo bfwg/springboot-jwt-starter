@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by fan.jin on 2016-10-19.
@@ -24,8 +26,12 @@ public class JwtUtil {
 
     public String generateToken(UserDetails userDetails) {
         // Put userDetails into token
+//        Map<String, Object> claims = new HashMap<>();
+//        claims.put("authority", userDetails.getAuthorities());
+
         String jws = Jwts.builder()
                 .setIssuer( "springboot-jwt-demo" )
+//                .setClaims( claims )
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))

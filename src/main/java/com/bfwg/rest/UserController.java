@@ -9,11 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -34,16 +37,26 @@ public class UserController {
     @Value("${jwt.header}")
     private String tokenHeader;
 
-    @RequestMapping( method = GET, value = "/user/{username}" )
-    public ResponseEntity<User> loadUser( @PathVariable String username ) {
-        return Optional.ofNullable( this.userService.findByUsername( username ) )
+    @RequestMapping( method = GET, value = "/user/{id}" )
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<User> loadById( @PathVariable Long id ) {
+        return Optional.ofNullable( this.userService.findById( id ) )
                 .map( u -> new ResponseEntity<>( u, HttpStatus.OK ) )
-                .orElse( new ResponseEntity<>( HttpStatus.FORBIDDEN) );
+                .orElse( new ResponseEntity<>( HttpStatus.NOT_FOUND ) );
+    }
+
+    @RequestMapping( method = GET, value= "/allUsers")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<User>> loadAll(Principal p, Authentication auth) {
+        System.out.println(p.getName());
+        System.out.println(auth.getAuthorities().toString());
+        return Optional.ofNullable( this.userService.findAll() )
+                .map( u -> new ResponseEntity<>( u, HttpStatus.OK ) )
+                .orElse( new ResponseEntity<>( HttpStatus.NOT_FOUND ) );
     }
 
     @RequestMapping( method = GET, value = "/whoami" )
     public ResponseEntity<User> loadMe(HttpServletRequest request) {
-
         String username = jwtTokenUtil.getClaims(request.getHeader( tokenHeader )).getSubject();
         return Optional.ofNullable( this.userService.findByUsername( username ) )
                 .map( u -> new ResponseEntity<>( u, HttpStatus.OK ) )

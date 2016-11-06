@@ -1,5 +1,8 @@
 package com.bfwg.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.security.core.GrantedAuthority;
+
 import javax.persistence.*;
 
 /**
@@ -8,7 +11,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="Authority")
-public class Authority {
+public class Authority implements GrantedAuthority {
 
     @Id
     @Column(name="id")
@@ -18,7 +21,8 @@ public class Authority {
     @Column(name="name")
     String name;
 
-    public String getName() {
+    @Override
+    public String getAuthority() {
         return name;
     }
 
@@ -26,6 +30,12 @@ public class Authority {
         this.name = name;
     }
 
+    @JsonIgnore
+    public String getName() {
+        return name;
+    }
+
+    @JsonIgnore
     public Long getId() {
         return id;
     }

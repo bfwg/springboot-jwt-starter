@@ -89,9 +89,9 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> grantedAuths = new ArrayList<>();
-        grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
-        return grantedAuths;
+//        List<GrantedAuthority> grantedAuths = new ArrayList<>();
+//        grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
+        return this.authorities;
     }
 
     @JsonIgnore

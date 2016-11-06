@@ -1,5 +1,7 @@
 package com.bfwg.security;
 
+import com.bfwg.service.UserService;
+import io.jsonwebtoken.Claims;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,7 +21,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by fan.jin on 2016-10-19.
@@ -32,6 +38,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     JwtUtil jwtTokenUtil;
 
+    @Autowired
+    UserDetailsService userDetailsService;
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -45,14 +53,11 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             if (jwtTokenUtil.validateToken(jwtToken)) {
 
                 String username = jwtTokenUtil.getClaims(jwtToken).getSubject();
-                // stub and grent user authorities
-                List<GrantedAuthority> grantedAuths = new ArrayList<>();
-                grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
-
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 // hardcoded for now
                 // if we pass USER_ROLE, Authenticated will always be true;
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, grantedAuths);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
                 logger.info("USER AUTHENTICATED " + authentication.toString());
 
                 // set Security Context Authentication

@@ -46,6 +46,24 @@ $(function () {
   });
 
 
+  $('#getAllUser').click(function(){
+    $.ajax({
+      url: "/allUsers",
+      type: "GET",
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      headers: createAuthorizationTokenHeader(),
+      success: function (data) {
+        console.log(data);
+      },
+      error: function (err) {
+        console.log(err);
+      }
+    });
+  });
+
+
+
   function getJwtToken() {
     return localStorage.getItem(TOKEN_KEY);
   }
