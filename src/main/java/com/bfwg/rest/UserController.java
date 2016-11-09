@@ -47,9 +47,7 @@ public class UserController {
 
     @RequestMapping( method = GET, value= "/allUsers")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<User>> loadAll(Principal p, Authentication auth) {
-        System.out.println(p.getName());
-        System.out.println(auth.getAuthorities().toString());
+    public ResponseEntity<List<User>> loadAll(Authentication auth) {
         return Optional.ofNullable( this.userService.findAll() )
                 .map( u -> new ResponseEntity<>( u, HttpStatus.OK ) )
                 .orElse( new ResponseEntity<>( HttpStatus.NOT_FOUND ) );

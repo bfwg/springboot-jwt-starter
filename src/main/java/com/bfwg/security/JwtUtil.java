@@ -3,8 +3,12 @@ package com.bfwg.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -24,15 +28,13 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    public String generateToken(UserDetails userDetails) {
-        // Put userDetails into token
-//        Map<String, Object> claims = new HashMap<>();
-//        claims.put("authority", userDetails.getAuthorities());
+    @Value("${app.name}")
+    private String appName;
 
+    public String generateToken(String username) {
         String jws = Jwts.builder()
-                .setIssuer( "springboot-jwt-demo" )
-//                .setClaims( claims )
-                .setSubject(userDetails.getUsername())
+                .setIssuer( appName )
+                .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
                 .signWith( SignatureAlgorithm.HS512, secret )
@@ -41,16 +43,10 @@ public class JwtUtil {
     }
 
     public Claims getClaims(String token) {
-        Claims claims;
-        try {
-            claims = Jwts.parser()
-                    .setSigningKey(secret)
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (Exception e) {
-            claims = null;
-        }
-        return claims;
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public Boolean validateToken(String token) {

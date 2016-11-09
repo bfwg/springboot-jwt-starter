@@ -1,3 +1,5 @@
+app:
+  name: springboot-jwt-demo
 
 jwt:
   header: Authorization

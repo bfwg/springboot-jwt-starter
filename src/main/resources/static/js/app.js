@@ -5,15 +5,23 @@ $(function () {
   var $getClaim = $("#getClaim");
 
   $("#loginForm").submit(function(e) {
-    var formData = {
-        username: $(this).find('input[name="username"]').val(),
-        password: $(this).find('input[name="password"]').val()
-    };
+    e.preventDefault();
+
+//    var formData = {
+//        username: $(this).find('input[name="username"]').val(),
+//        password: $(this).find('input[name="password"]').val()
+//    };
+    var testdata = 'username=' + $(this).find('input[name="username"]').val() + '&password=' + $(this).find('input[name="password"]').val();
     $.ajax({
-      type: "POST",
-      url: "/login",
-      contentType: "application/json; charset=utf-8",
-      data: JSON.stringify(formData),
+        data: testdata,
+        timeout: 1000,
+        type: 'POST',
+        url: '/login',
+
+//      type: "POST",
+//      url: "/login",
+//      contentType: "application/json; charset=utf-8",
+//      data: JSON.stringify(formData),
       success: function (data) {
         setJwtToken(data.jwt);
         showTokenInformation();
@@ -22,7 +30,6 @@ $(function () {
         console.log(err);
       }
     });
-    e.preventDefault();
   });
 
   $getClaim.click(function(){
@@ -83,8 +90,8 @@ $(function () {
         success: function (data) {
           console.log(data);
         },
-        error: function () {
-          console.log('error!');
+        error: function (err) {
+          console.log(err);
         }
     });
   }

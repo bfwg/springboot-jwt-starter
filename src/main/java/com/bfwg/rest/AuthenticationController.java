@@ -1,7 +1,6 @@
 package com.bfwg.rest;
 
 import com.bfwg.model.Token;
-import com.bfwg.model.User;
 import com.bfwg.model.UserRepository;
 import com.bfwg.security.AuthenticationRequest;
 import com.bfwg.security.JwtUtil;
@@ -13,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,7 +48,7 @@ public class AuthenticationController {
     @Autowired
     private UserRepository userRepository;
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/login1", method = RequestMethod.POST)
     public ResponseEntity<Token> login( @RequestBody AuthenticationRequest authenticationRequest)  {
         // Security check
         Authentication authentication = authenticationManager.authenticate(
@@ -58,9 +58,17 @@ public class AuthenticationController {
             )
         );
 
+//        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+//            authenticationRequest.getUsername(),
+//            authenticationRequest.getPassword()
+//        );
+//
+//        // set Security Context Authentication
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-        return new ResponseEntity<>( new Token(jwtTokenUtil.generateToken( userDetails )), HttpStatus.OK );
+
+//        UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+        return new ResponseEntity<>( new Token(jwtTokenUtil.generateToken( authenticationRequest.getUsername() )), HttpStatus.OK );
     }
 
     @RequestMapping("/test-parse")
