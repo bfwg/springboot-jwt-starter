@@ -1,7 +1,6 @@
 package com.bfwg.rest;
 
 import com.bfwg.model.User;
-import com.bfwg.security.AuthenticationRequest;
 import com.bfwg.security.JwtUtil;
 import com.bfwg.service.impl.JpaUserService;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 

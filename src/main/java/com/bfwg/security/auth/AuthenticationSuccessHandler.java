@@ -1,4 +1,4 @@
-package com.bfwg.security;
+package com.bfwg.security.auth;
 
 /**
  * Created by fan.jin on 2016-11-07.
@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.bfwg.model.Token;
 import com.bfwg.model.User;
+import com.bfwg.security.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

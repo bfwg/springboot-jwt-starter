@@ -1,11 +1,14 @@
-package com.bfwg.security;
+package com.bfwg.security.auth;
 
+import com.bfwg.model.User;
+import com.bfwg.security.JwtUtil;
 import com.bfwg.service.UserService;
 import io.jsonwebtoken.Claims;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -62,10 +65,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
                     String username = jwtTokenUtil.getClaims(token).getSubject();
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    TokenBasedAuthentication authentication = new TokenBasedAuthentication( userDetails );
+                    authentication.setToken( token );
+                    authentication.setAuthenticated( true );
 
-                    // hardcoded for now
                     // if we pass USER_ROLE, Authenticated will always be true;
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
+//                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
 
                     // set Security Context Authentication
                     SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -1,4 +1,4 @@
-package com.bfwg.security;
+package com.bfwg.security.auth;
 
 /**
  * Created by fan.jin on 2016-10-30.
