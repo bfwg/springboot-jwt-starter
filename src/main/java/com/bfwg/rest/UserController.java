@@ -2,6 +2,8 @@ package com.bfwg.rest;
 
 import com.bfwg.model.User;
 import com.bfwg.security.JwtUtil;
+import com.bfwg.security.SecurityUtility;
+import com.bfwg.security.auth.TokenBasedAuthentication;
 import com.bfwg.service.impl.JpaUserService;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,9 @@ public class UserController {
     @Autowired
     JwtUtil jwtTokenUtil;
 
+    @Autowired
+    SecurityUtility securityUtility;
+
     @Value("${jwt.header}")
     private String tokenHeader;
 
@@ -52,9 +57,10 @@ public class UserController {
     }
 
     @RequestMapping( method = GET, value = "/whoami" )
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<User> loadMe(HttpServletRequest request) {
-        String username = jwtTokenUtil.getClaims(request.getHeader( tokenHeader )).getSubject();
-        return Optional.ofNullable( this.userService.findByUsername( username ) )
+        User user = securityUtility.getAuthenticationPrinciple();
+        return Optional.ofNullable( this.userService.findByUsername( user.getUsername() ) )
                 .map( u -> new ResponseEntity<>( u, HttpStatus.OK ) )
                 .orElse( new ResponseEntity<>( HttpStatus.I_AM_A_TEAPOT) );
     }

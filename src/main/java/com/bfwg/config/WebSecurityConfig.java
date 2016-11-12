@@ -1,9 +1,10 @@
 package com.bfwg.config;
 
+import com.bfwg.security.SecurityUtility;
 import com.bfwg.security.auth.AuthenticationFailureHandler;
 import com.bfwg.security.auth.JwtAuthenticationTokenFilter;
 import com.bfwg.security.auth.AuthenticationSuccessHandler;
-import com.bfwg.security.UnauthenticationEntryPoint;
+import com.bfwg.security.auth.AuthenticationProvider;
 import com.bfwg.service.impl.JwtUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,17 +24,22 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-
-    @Autowired
-    JwtUserDetailsService jwtUserDetailsService;
-
     @Bean
     public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter() throws Exception {
         return new JwtAuthenticationTokenFilter();
     }
 
+    @Bean
+    public SecurityUtility securityUtility() {
+        return new SecurityUtility( new AuthenticationProvider() );
+    }
+
+
     @Autowired
-    public UnauthenticationEntryPoint unauthenticationEntryPoint;
+    JwtUserDetailsService jwtUserDetailsService;
+
+    @Autowired
+    JwtAuthenticationTokenFilter.UnauthenticationEntryPoint unauthenticationEntryPoint;
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

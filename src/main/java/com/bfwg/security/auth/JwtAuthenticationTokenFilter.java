@@ -2,23 +2,17 @@ package com.bfwg.security.auth;
 
 import com.bfwg.model.User;
 import com.bfwg.security.JwtUtil;
-import com.bfwg.service.UserService;
-import io.jsonwebtoken.Claims;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -26,10 +20,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by fan.jin on 2016-10-19.
@@ -66,13 +56,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                     String username = jwtTokenUtil.getClaims(token).getSubject();
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                     TokenBasedAuthentication authentication = new TokenBasedAuthentication( userDetails );
+
                     authentication.setToken( token );
                     authentication.setAuthenticated( true );
-
-                    // if we pass USER_ROLE, Authenticated will always be true;
-//                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
-
-                    // set Security Context Authentication
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (Exception e) {
@@ -83,5 +69,21 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
 
         chain.doFilter(request, response);
+    }
+
+    /**
+     * Created by fan.jin on 2016-11-07.
+     */
+    @Component
+    public static class UnauthenticationEntryPoint implements AuthenticationEntryPoint {
+
+        @Override
+        public void commence(HttpServletRequest request,
+                             HttpServletResponse response,
+                             AuthenticationException authException) throws IOException {
+            // This is invoked when user tries to access a secured REST resource without supplying any credentials
+            // We should just send a 401 Unauthorized response because there is no 'login page' to redirect to
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized, bad token");
+        }
     }
 }
