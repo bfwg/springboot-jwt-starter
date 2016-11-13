@@ -10,7 +10,12 @@ import java.util.List;
 /**
  * Created by fan.jin on 2016-10-31.
  */
-public class JwtUserDetail extends User implements UserDetails {
+
+/**
+ *  This class simply a User class with some extra sugar and it is called by UserDetailService.
+ *  We are not calling this class anywhere in our application.
+ */
+public class CustomUserDetail extends User implements UserDetails {
 
     @JsonIgnore
     @Override

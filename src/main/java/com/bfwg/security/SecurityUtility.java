@@ -42,4 +42,18 @@ public class SecurityUtility {
         return ( auth == null ? null : (User)auth.getPrincipal() );
     }
 
+    /**
+     * Gets the current request's token
+     */
+    public String getToken() {
+        String token;
+        TokenBasedAuthentication auth = getAuthenticationObject();
+        if ( auth == null ) {
+            return null;
+        } else {
+            token = auth.getToken();
+        }
+        return token;
+    }
+
 }

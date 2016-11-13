@@ -1,13 +1,10 @@
 package com.bfwg.rest;
 
 import com.bfwg.model.User;
-import com.bfwg.security.JwtUtil;
 import com.bfwg.security.SecurityUtility;
-import com.bfwg.security.auth.TokenBasedAuthentication;
-import com.bfwg.service.impl.JpaUserService;
+import com.bfwg.service.UserService;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,32 +26,29 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class UserController {
 
     @Autowired
-    private JpaUserService userService;
-
-    @Autowired
-    JwtUtil jwtTokenUtil;
+    private UserService userService;
 
     @Autowired
     SecurityUtility securityUtility;
 
-    @RequestMapping( method = GET, value = "/user/{id}" )
+    @RequestMapping( method = GET, value = "/user/{userId}" )
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> loadById( @PathVariable Long id ) {
-        return Optional.ofNullable( this.userService.findById( id ) )
+    public ResponseEntity<User> loadById( @PathVariable Long userId ) {
+        return Optional.ofNullable( this.userService.findById( userId ) )
                 .map( u -> new ResponseEntity<>( u, HttpStatus.OK ) )
                 .orElse( new ResponseEntity<>( HttpStatus.NOT_FOUND ) );
     }
 
-    @RequestMapping( method = GET, value= "/allUsers")
+    @RequestMapping( method = GET, value= "/user/all")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<User>> loadAll(Authentication auth) {
+    public ResponseEntity<List<User>> loadAll() {
         return Optional.ofNullable( this.userService.findAll() )
                 .map( u -> new ResponseEntity<>( u, HttpStatus.OK ) )
                 .orElse( new ResponseEntity<>( HttpStatus.NOT_FOUND ) );
     }
 
     @RequestMapping( method = GET, value = "/whoami" )
-    public ResponseEntity<User> loadMe(HttpServletRequest request) {
+    public ResponseEntity<User> loadMe() {
         User user = securityUtility.getAuthenticationPrinciple();
         return Optional.ofNullable( this.userService.findByUsername( user.getUsername() ) )
                 .map( u -> new ResponseEntity<>( u, HttpStatus.OK ) )

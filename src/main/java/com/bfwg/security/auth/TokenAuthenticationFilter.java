@@ -1,6 +1,6 @@
 package com.bfwg.security.auth;
 
-import com.bfwg.security.JwtUtil;
+import com.bfwg.security.TokenUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -27,7 +26,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private final Log logger = LogFactory.getLog(this.getClass());
 
     @Autowired
-    JwtUtil jwtTokenUtil;
+    TokenUtils jwtTokenUtil;
 
     @Autowired
     UserDetailsService userDetailsService;

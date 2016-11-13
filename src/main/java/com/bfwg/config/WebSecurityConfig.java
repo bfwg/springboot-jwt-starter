@@ -2,7 +2,7 @@ package com.bfwg.config;
 
 import com.bfwg.security.SecurityUtility;
 import com.bfwg.security.auth.*;
-import com.bfwg.service.impl.JwtUserDetailsService;
+import com.bfwg.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +33,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Autowired
-    JwtUserDetailsService jwtUserDetailsService;
+    CustomUserDetailsService jwtUserDetailsService;
 
     @Autowired
     RestAuthenticationEntryPoint restAuthenticationEntryPoint;

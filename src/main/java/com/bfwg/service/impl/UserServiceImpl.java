@@ -1,8 +1,7 @@
 package com.bfwg.service.impl;
 
 import com.bfwg.model.User;
-import com.bfwg.model.UserRepository;
-import com.bfwg.service.UserService;
+import com.bfwg.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,7 @@ import java.util.List;
  */
 
 @Service
-public class JpaUserService implements UserService {
+public class UserServiceImpl implements com.bfwg.service.UserService {
     @Autowired
     private UserRepository userRepository;
 

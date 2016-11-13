@@ -32,6 +32,22 @@ $(function () {
     });
   });
 
+  $('#parseToken').click(function(){
+    $.ajax({
+      url: "/parse-token",
+      type: "GET",
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      headers: createAuthorizationTokenHeader(),
+      success: function (data) {
+        console.log(data);
+      },
+      error: function (err) {
+        console.log(err);
+      }
+    });
+  });
+
   $('#getUser').click(function(){
     $.ajax({
       url: "/whoami",
@@ -51,7 +67,7 @@ $(function () {
 
   $('#getAllUser').click(function(){
     $.ajax({
-      url: "/allUsers",
+      url: "/user/all",
       type: "GET",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
