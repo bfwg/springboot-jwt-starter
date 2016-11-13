@@ -23,17 +23,13 @@ $(function () {
 //      contentType: "application/json; charset=utf-8",
 //      data: JSON.stringify(formData),
       success: function (data) {
-        setJwtToken(data.jwt);
-        showTokenInformation();
+        setJwtToken(data.access_token);
+        showTokenInformation(data);
       },
       error: function (err) {
         console.log(err);
       }
     });
-  });
-
-  $getClaim.click(function(){
-    showUserInformation();
   });
 
   $('#getUser').click(function(){
@@ -79,33 +75,16 @@ $(function () {
     localStorage.setItem(TOKEN_KEY, token);
   }
 
-
-  function showUserInformation() {
-    $.ajax({
-        url: "/test-parse",
-        type: "GET",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        headers: createAuthorizationTokenHeader(),
-        success: function (data) {
-          console.log(data);
-        },
-        error: function (err) {
-          console.log(err);
-        }
-    });
-  }
-
-  function showTokenInformation() {
+  function showTokenInformation(token_info) {
       $token
-          .text("{ Token: " + getJwtToken() )
+          .text(JSON.stringify(token_info))
           .show();
   }
 
   function createAuthorizationTokenHeader() {
       var token = getJwtToken();
       if (token) {
-          return {"Authorization": token};
+          return {"Authorization": "Bearer " + token};
       } else {
           return {};
       }

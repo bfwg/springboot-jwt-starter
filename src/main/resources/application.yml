@@ -2,6 +2,6 @@ app:
   name: springboot-jwt-demo
 
 jwt:
-  header: Authorization
+  ttl: 60000 # 10 minute
   secret: queenvictoria
-  expiration: 604800
+

@@ -1,10 +1,7 @@
 package com.bfwg.config;
 
 import com.bfwg.security.SecurityUtility;
-import com.bfwg.security.auth.AuthenticationFailureHandler;
-import com.bfwg.security.auth.JwtAuthenticationTokenFilter;
-import com.bfwg.security.auth.AuthenticationSuccessHandler;
-import com.bfwg.security.auth.AuthenticationProvider;
+import com.bfwg.security.auth.*;
 import com.bfwg.service.impl.JwtUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -25,8 +22,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
-    public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter() throws Exception {
-        return new JwtAuthenticationTokenFilter();
+    public TokenAuthenticationFilter jwtAuthenticationTokenFilter() throws Exception {
+        return new TokenAuthenticationFilter();
     }
 
     @Bean
@@ -39,7 +36,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     JwtUserDetailsService jwtUserDetailsService;
 
     @Autowired
-    JwtAuthenticationTokenFilter.UnauthenticationEntryPoint unauthenticationEntryPoint;
+    RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -56,12 +53,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity
-                // we don't need CSRF because our token is invulnerable
+                // CSRF not needed
                 .csrf().disable()
-                // don't create session
+                // STATELESS session
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().exceptionHandling().authenticationEntryPoint( unauthenticationEntryPoint )
+
+                .and().exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint )
                 .and().addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
+                .authorizeRequests()
+                    .antMatchers("/")
+                    .permitAll()
+                  .anyRequest()
+                    .authenticated().and()
                 .formLogin()
                 .loginPage("/login")
                 .successHandler(authenticationSuccessHandler)

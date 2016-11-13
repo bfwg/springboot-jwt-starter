@@ -37,9 +37,6 @@ public class UserController {
     @Autowired
     SecurityUtility securityUtility;
 
-    @Value("${jwt.header}")
-    private String tokenHeader;
-
     @RequestMapping( method = GET, value = "/user/{id}" )
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> loadById( @PathVariable Long id ) {
@@ -57,7 +54,6 @@ public class UserController {
     }
 
     @RequestMapping( method = GET, value = "/whoami" )
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<User> loadMe(HttpServletRequest request) {
         User user = securityUtility.getAuthenticationPrinciple();
         return Optional.ofNullable( this.userService.findByUsername( user.getUsername() ) )

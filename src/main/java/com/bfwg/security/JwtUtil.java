@@ -25,7 +25,7 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration}")
+    @Value("${jwt.ttl}")
     private Long expiration;
 
     @Value("${app.name}")
@@ -49,11 +49,8 @@ public class JwtUtil {
                 .getBody();
     }
 
-    public Boolean validateToken(String token) {
-        return !isTokenExpired(token);
-    }
 
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         final Date expiration = getClaims(token).getExpiration();
         return expiration.before(new Date());
     }

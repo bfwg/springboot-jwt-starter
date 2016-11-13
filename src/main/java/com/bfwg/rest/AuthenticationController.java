@@ -1,9 +1,8 @@
 package com.bfwg.rest;
 
-import com.bfwg.model.Token;
+import com.bfwg.model.UserTokenState;
 import com.bfwg.model.UserRepository;
 import com.bfwg.security.JwtUtil;
-import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -28,9 +27,6 @@ public class AuthenticationController {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.header}")
-    private String tokenHeader;
-
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -43,33 +39,27 @@ public class AuthenticationController {
     @Autowired
     private UserRepository userRepository;
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<Token> login(HttpServletRequest request)  {
-        // Security check
-        System.out.println(request.getParameter("username"));
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                    request.getParameter("username"),
-                    request.getParameter("password")
-            )
-        );
-
-//        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-//            authenticationRequest.getUsername(),
-//            authenticationRequest.getPassword()
+//    @RequestMapping(value = "/login1", method = RequestMethod.POST)
+//    public ResponseEntity<UserTokenState> login(HttpServletRequest request)  {
+//        // Security check
+//        System.out.println(request.getParameter("username"));
+//        Authentication authentication = authenticationManager.authenticate(
+//            new UsernamePasswordAuthenticationToken(
+//                    request.getParameter("username"),
+//                    request.getParameter("password")
+//            )
 //        );
 //
-//        // set Security Context Authentication
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-        return new ResponseEntity<>( new Token(jwtTokenUtil.generateToken( request.getParameter("username") )), HttpStatus.OK );
-    }
-
-    @RequestMapping("/test-parse")
-    public Claims testParse(HttpServletRequest request) {
-        String jwt = request.getHeader(tokenHeader);
-        return jwtTokenUtil.getClaims((jwt));
-    }
+////        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+////            authenticationRequest.getUsername(),
+////            authenticationRequest.getPassword()
+////        );
+////
+////        // set Security Context Authentication
+////        SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//
+////        UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+////        return new ResponseEntity<>( new UserTokenState(jwtTokenUtil.generateToken( request.getParameter("username") )), HttpStatus.OK );
+//    }
 }
