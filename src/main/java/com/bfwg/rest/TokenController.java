@@ -40,7 +40,7 @@ public class TokenController {
         return new ResponseEntity<>( new ParsedToken(token), HttpStatus.OK );
     }
 
-    // demo parsed token class
+    // demo parsed token model class
     class ParsedToken {
 
         private JwsHeader header;
