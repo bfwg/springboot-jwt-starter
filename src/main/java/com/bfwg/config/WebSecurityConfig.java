@@ -12,6 +12,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+
+import javax.servlet.Filter;
+import javax.servlet.http.HttpSession;
 
 /**
  * Created by fan.jin on 2016-10-19.
@@ -46,31 +51,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthenticationSuccessHandler authenticationSuccessHandler;
 
-    @Autowired
-    private AuthenticationFailureHandler authenticationFailureHandler;
-
     @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
-
-        httpSecurity
-                // CSRF not needed
+    protected void configure(HttpSecurity http) throws Exception {
+        http
                 .csrf().disable()
-                // STATELESS session
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
-                .and().exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint )
-                .and().addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
+//                .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
+                .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint ).and()
+//                .addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
                 .authorizeRequests()
-                    .antMatchers("/")
-                    .permitAll()
+                    .antMatchers("/", "/index.html", "/home.html", "/index2.html").permitAll()
                   .anyRequest()
                     .authenticated().and()
                 .formLogin()
-                .loginPage("/login")
-                .successHandler(authenticationSuccessHandler)
-                .failureHandler(authenticationFailureHandler);
-
-
+                .loginPage("/login");
+//                .successHandler(authenticationSuccessHandler);
     }
 
 }

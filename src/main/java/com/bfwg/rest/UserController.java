@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,5 +54,10 @@ public class UserController {
         return Optional.ofNullable( this.userService.findByUsername( user.getUsername() ) )
                 .map( u -> new ResponseEntity<>( u, HttpStatus.OK ) )
                 .orElse( new ResponseEntity<>( HttpStatus.I_AM_A_TEAPOT) );
+    }
+
+    @RequestMapping("/user")
+    public Principal user(Principal user) {
+        return user;
     }
 }
