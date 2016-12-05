@@ -27,6 +27,17 @@ public class TokenUtils {
 
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
 
+    public String getUsernameFromToken(String token) {
+        String username;
+        try {
+            final Claims claims = this.getClaimsFromToken(token);
+            username = claims.getSubject();
+        } catch (Exception e) {
+            username = null;
+        }
+        return username;
+    }
+
     public String generateToken(String username) {
         String jws = Jwts.builder()
                 .setIssuer( APP_NAME )
@@ -45,23 +56,43 @@ public class TokenUtils {
                 .getHeader();
     }
 
-    public Claims getClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET)
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
     public String getSignature() {
         return SIGNATURE_ALGORITHM.getJcaName().toUpperCase()
                 + "( base64UrlEncode(header) + \".\" + base64UrlEncode(payload), " + SECRET + " )";
     }
 
+    public Date getExpirationDateFromToken(String token) {
+        Date expiration;
+        try {
+            final Claims claims = this.getClaimsFromToken(token);
+            expiration = claims.getExpiration();
+        } catch (Exception e) {
+            expiration = null;
+        }
+        return expiration;
+    }
 
     public Boolean isTokenExpired(String token) {
-        final Date expiration = getClaims(token).getExpiration();
-        return expiration.before(generateCurrentDate());
+        final Date expiration = this.getExpirationDateFromToken(token);
+        if ( expiration != null ) {
+            return expiration.before(this.generateCurrentDate());
+        }
+        return true;
     }
+
+    private Claims getClaimsFromToken(String token) {
+        Claims claims;
+        try {
+            claims = Jwts.parser()
+                    .setSigningKey(this.SECRET)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            claims = null;
+        }
+        return claims;
+    }
+
 
     private Date generateCurrentDate() {
         return new Date(System.currentTimeMillis());

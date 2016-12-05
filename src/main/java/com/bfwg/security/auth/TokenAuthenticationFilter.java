@@ -1,6 +1,7 @@
 package com.bfwg.security.auth;
 
 import com.bfwg.security.TokenUtils;
+import org.apache.catalina.security.SecurityUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +36,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     UserDetailsService userDetailsService;
-
-    @Autowired
-    AuthenticationEntryPoint authenticationEntryPoint;
 
     private String getToken( HttpServletRequest request ) {
         /**
@@ -83,29 +81,17 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         String authToken = getToken( request );
-        if (authToken != null) {
-            try {
-                // get username from token
-                String username = jwtTokenUtil.getClaims(authToken).getSubject();
-                // get user
-                UserDetails userDetails = userDetailsService.loadUserByUsername( username );
-                // create authentication
-                TokenBasedAuthentication authentication = new TokenBasedAuthentication( userDetails );
+        if ( authToken != null && !jwtTokenUtil.isTokenExpired( authToken )) {
+            // get username from token
+            String username = jwtTokenUtil.getUsernameFromToken( authToken );
+            // get user
+            UserDetails userDetails = userDetailsService.loadUserByUsername( username );
+            // create authentication
+            TokenBasedAuthentication authentication = new TokenBasedAuthentication( userDetails );
 
-                authentication.setToken( authToken );
-                authentication.setAuthenticated( true );
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (Exception e) {
-                AuthenticationException authEx;
-                if ( e instanceof AuthenticationException ) {
-                    authEx = (AuthenticationException) e;
-                } else {
-                    // here we might get JWT exceptions like malformed, expired etc
-                    authEx = new InsufficientAuthenticationException( e.getMessage(), e );
-                }
-                authenticationEntryPoint.commence( request, response, authEx );
-                return;
-            }
+            authentication.setToken( authToken );
+            authentication.setAuthenticated( true );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         chain.doFilter(request, response);

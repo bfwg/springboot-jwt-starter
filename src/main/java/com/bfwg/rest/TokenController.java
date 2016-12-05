@@ -49,7 +49,7 @@ public class TokenController {
 
         public ParsedToken(String token) {
             header = tokenUtils.getHeader(token);
-            payload = tokenUtils.getClaims(token);
+//            payload = tokenUtils.get;
             signature = tokenUtils.getSignature();
         }
 
