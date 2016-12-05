@@ -22,4 +22,5 @@ public class ResourceController {
         model.put("content", "Hello World");
         return model;
     }
+
 }

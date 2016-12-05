@@ -4,4 +4,6 @@ app:
 jwt:
   expires_in: 600 # 10 minute
   secret: queenvictoria
+  cookie_name: auth_token
+
 

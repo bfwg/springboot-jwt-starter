@@ -55,16 +55,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-//                .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
+                .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
                 .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint ).and()
-//                .addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
                 .authorizeRequests()
-                    .antMatchers("/", "/index.html", "/home.html", "/index2.html").permitAll()
+                    .antMatchers("/", "/index.html", "/login.html", "/home.html", "/index2.html").permitAll()
                   .anyRequest()
                     .authenticated().and()
                 .formLogin()
-                .loginPage("/login");
-//                .successHandler(authenticationSuccessHandler);
+                .successHandler(authenticationSuccessHandler);
     }
 
 }

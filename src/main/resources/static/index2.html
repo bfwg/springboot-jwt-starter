@@ -11,14 +11,16 @@
     </style>
 </head>
 <body ng-app="hello">
-  <div class="container">
-    <h1>Greeting</h1>
-    <div ng-controller="home" ng-cloak class="ng-cloak">
-      <p>The ID is {{greeting.id}}</p>
-      <p>The content is {{greeting.content}}</p>
-    </div>
-  </div>
-  <script src="webjars/angularjs/1.4.9/angular.js"></script>
+  <div ng-controller="navigation as nav" class="container">
+		<ul class="nav nav-pills" role="tablist">
+			<li class="active"><a href="#/">home</a></li>
+			<li><a href="#/login">login</a></li>
+			<li ng-show="authenticated"><a href="" ng-click="nav.logout()">logout</a></li>
+		</ul>
+	</div>
+	<div ng-view class="container"></div>
+  <script src="webjars/angularjs/1.5.8/angular.js"></script>
+  <script src="webjars/angular-route/1.5.9/angular-route.js"></script>
   <script src="js/app2.js"></script>
 </body>
 

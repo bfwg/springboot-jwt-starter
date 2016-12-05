@@ -17,7 +17,7 @@ $(function () {
     e.preventDefault();
     $.post( "/login", $(this).serialize(), function(data, textStatus) {
       localStorage.setItem(TOKEN_KEY, data.token);
-      showTokenInformation(data);
+      // showTokenInformation(data);
     });
   });
 
