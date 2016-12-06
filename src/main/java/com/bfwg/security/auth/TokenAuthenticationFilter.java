@@ -81,9 +81,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         String authToken = getToken( request );
-        if ( authToken != null && !jwtTokenUtil.isTokenExpired( authToken )) {
-            // get username from token
-            String username = jwtTokenUtil.getUsernameFromToken( authToken );
+        // get username from token
+        String username = jwtTokenUtil.getUsernameFromToken( authToken );
+        if ( username != null ) {
             // get user
             UserDetails userDetails = userDetailsService.loadUserByUsername( username );
             // create authentication

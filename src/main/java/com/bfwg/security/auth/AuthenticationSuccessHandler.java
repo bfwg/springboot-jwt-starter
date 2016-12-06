@@ -13,15 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.bfwg.model.UserTokenState;
 import com.bfwg.model.User;
-import com.bfwg.security.SecurityUtility;
 import com.bfwg.security.TokenUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.token.Token;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -40,9 +36,6 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 	@Autowired
 	ObjectMapper objectMapper;
 
-	@Autowired
-	SecurityUtility securityUtility;
-
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication ) throws IOException, ServletException {
@@ -56,7 +49,9 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 		response.setContentType("application/json");
         // Create token auth Cookie
         Cookie authCookie = new Cookie( AUTH_COOKIE, ( jws ) );
-        authCookie.setHttpOnly( true );
+		authCookie.setPath( "/" );
+		authCookie.setHttpOnly( true );
+		authCookie.setMaxAge(3600);
 		response.addCookie( authCookie );
 		response.getWriter().write( jwtResponse );
 	}

@@ -42,7 +42,7 @@ public class TokenUtils {
         String jws = Jwts.builder()
                 .setIssuer( APP_NAME )
                 .setSubject(username)
-                .setIssuedAt(new Date())
+                .setIssuedAt(generateCurrentDate())
                 .setExpiration(generateExpirationDate())
                 .signWith( SIGNATURE_ALGORITHM, SECRET )
                 .compact();
@@ -59,25 +59,6 @@ public class TokenUtils {
     public String getSignature() {
         return SIGNATURE_ALGORITHM.getJcaName().toUpperCase()
                 + "( base64UrlEncode(header) + \".\" + base64UrlEncode(payload), " + SECRET + " )";
-    }
-
-    public Date getExpirationDateFromToken(String token) {
-        Date expiration;
-        try {
-            final Claims claims = this.getClaimsFromToken(token);
-            expiration = claims.getExpiration();
-        } catch (Exception e) {
-            expiration = null;
-        }
-        return expiration;
-    }
-
-    public Boolean isTokenExpired(String token) {
-        final Date expiration = this.getExpirationDateFromToken(token);
-        if ( expiration != null ) {
-            return expiration.before(this.generateCurrentDate());
-        }
-        return true;
     }
 
     private Claims getClaimsFromToken(String token) {

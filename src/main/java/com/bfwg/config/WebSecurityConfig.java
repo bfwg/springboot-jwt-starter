@@ -1,6 +1,5 @@
 package com.bfwg.config;
 
-import com.bfwg.security.SecurityUtility;
 import com.bfwg.security.auth.*;
 import com.bfwg.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +11,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-
-import javax.servlet.Filter;
-import javax.servlet.http.HttpSession;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * Created by fan.jin on 2016-10-19.
@@ -30,13 +26,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public TokenAuthenticationFilter jwtAuthenticationTokenFilter() throws Exception {
         return new TokenAuthenticationFilter();
     }
-
     @Bean
-    public SecurityUtility securityUtility() {
-        return new SecurityUtility( new AuthenticationProvider() );
+    public JwtLogoutHandler jwtLogoutHandler() {
+        return new JwtLogoutHandler();
     }
-
-
     @Autowired
     CustomUserDetailsService jwtUserDetailsService;
 
@@ -54,7 +47,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+                .csrf()
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
                 .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
                 .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint ).and()
                 .addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
@@ -63,7 +57,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                   .anyRequest()
                     .authenticated().and()
                 .formLogin()
-                .successHandler(authenticationSuccessHandler);
+                .successHandler(authenticationSuccessHandler).and()
+                .logout()
+                    .addLogoutHandler(jwtLogoutHandler())
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
     }
 
 }
