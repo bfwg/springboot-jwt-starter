@@ -17,6 +17,8 @@ Admin - admin:123
 
 JWT Tokens are configured to expire after 10 minutes, you can get a new token by sign in again. They are saved in a http-only cookie instead of localstorage thi will prevent csrf attacks
 
+The frontend code is based on [Spring Security and Angular JS](https://spring.io/guides/tutorials/spring-security-and-angular-js/)
+
 [Stormpath article](https://stormpath.com/blog/token-auth-spa)
 
 The project is heavyly inspired by [Cerberus](https://github.com/brahalla/Cerberus).
