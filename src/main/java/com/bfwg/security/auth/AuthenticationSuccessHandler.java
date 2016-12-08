@@ -4,7 +4,6 @@ package com.bfwg.security.auth;
  * Created by fan.jin on 2016-11-07.
  */
 import java.io.IOException;
-import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;

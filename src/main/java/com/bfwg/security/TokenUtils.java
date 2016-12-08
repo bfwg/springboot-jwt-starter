@@ -49,18 +49,6 @@ public class TokenUtils {
         return jws;
     }
 
-    public JwsHeader getHeader(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET)
-                .parseClaimsJws(token)
-                .getHeader();
-    }
-
-    public String getSignature() {
-        return SIGNATURE_ALGORITHM.getJcaName().toUpperCase()
-                + "( base64UrlEncode(header) + \".\" + base64UrlEncode(payload), " + SECRET + " )";
-    }
-
     private Claims getClaimsFromToken(String token) {
         Claims claims;
         try {
