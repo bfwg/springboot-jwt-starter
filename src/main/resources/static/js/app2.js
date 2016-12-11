@@ -1,4 +1,4 @@
-angular.module('hello', [ 'ngRoute' ])
+angular.module('hello', [ 'ngRoute', 'authModule' ])
   .config(function($routeProvider, $httpProvider) {
 
     $routeProvider.when('/', {
@@ -14,30 +14,29 @@ angular.module('hello', [ 'ngRoute' ])
     $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 
   })
-  .controller('home', function($http) {
-    var self = this;
-    $http.get('/resource/').then(function(response) {
-      self.greeting = response.data;
-    })
-  })
-.controller('navigation', function($rootScope, $http, $location, $httpParamSerializerJQLike) {
-  var self = this
-  var authenticate = function(credentials, callback) {
-    $http.get('user').then(function(response) {
-      if (response.data.name) {
-        $rootScope.authenticated = true;
-      } else {
-        $rootScope.authenticated = false;
-      }
-      callback && callback();
-    }, function() {
-      $rootScope.authenticated = false;
-      callback && callback();
-    });
 
+.controller('home', function($rootScope, $http, authentication) {
+  var self = this;
+  $rootScope.authenticated = authentication.isAuthenticated();
+  if ($rootScope.authenticated) {
+    authentication.getUser()
+    .then(function(response) {
+      self.user = response.data;
+    });
   }
 
-  authenticate();
+  // $http.get('/resource/').then(function(response) {
+    // self.greeting = response.data;
+  // });
+})
+
+.controller('navigation', function($scope, $rootScope, $http, $location, $httpParamSerializerJQLike, authentication) {
+
+  var self = this
+  self.selectedTab = $location.path();
+
+  console.log(self.selectedTab);
+
   self.credentials = {};
   self.login = function() {
     // We are using formLogin in our backend, so here we need to serialize our form data
@@ -49,15 +48,20 @@ angular.module('hello', [ 'ngRoute' ])
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
-    .then(function() {
-      authenticate(self.credentials, function() {
-        if ($rootScope.authenticated) {
-          $location.path("/");
-          self.error = false;
-        } else {
-          $location.path("/login");
-          self.error = true;
-        }
+    .then(function(res) {
+      $scope.apply(function() {
+        $rootScope.authenticated = true;
+        $location.path("/");
+        self.selectedTab = "/";
+        self.error = false;
+      });
+    })
+    .catch(function() {
+      $scope.apply(function() {
+        $rootScope.authenticated = false;
+        $location.path("/login");
+        self.selectedTab = "/login";
+        self.error = true;
       });
     });
   };
@@ -66,7 +70,33 @@ angular.module('hello', [ 'ngRoute' ])
   self.logout = function() {
     $http.post('logout', {}).finally(function() {
       $rootScope.authenticated = false;
-      $location.path("/");
+      $location.path("#/");
+      self.selectedTab = "/";
     });
   }
+
+  self.setSelectedTab = function(tab) {
+    self.selectedTab = tab;
+  }
+
+  self.tabClass = function(tab) {
+    if (self.selectedTab == tab) {
+      return "active";
+    } else {
+      return "";
+    }
+  }
+
+});
+
+angular.module('authModule', [ 'ngCookies' ])
+.factory('authentication', function($http, $cookies) {
+  return {
+    isAuthenticated: function() {
+      return !!$cookies.get('c_user');
+    },
+    getUser: function() {
+      return $http.get('user')
+    }
+  };
 });

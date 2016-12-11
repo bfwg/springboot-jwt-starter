@@ -28,7 +28,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final Log logger = LogFactory.getLog(this.getClass());
 
-    @Value("${jwt.cookie_name}")
+    @Value("${jwt.token_cookie}")
     private String AUTH_COOKIE;
 
     @Autowired
@@ -56,6 +56,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         return null;
     }
+
     /**
      * Find a specific HTTP cookie in a request.
      *

@@ -1,9 +1,10 @@
 app:
   name: springboot-jwt-demo
+  user_cookie: c_user
 
 jwt:
-  expires_in: 600 # 10 minute
+  expires_in: 600 # 10 minutes
   secret: queenvictoria
-  cookie_name: AUTH-TOKEN
+  token_cookie: AUTH-TOKEN
 
 

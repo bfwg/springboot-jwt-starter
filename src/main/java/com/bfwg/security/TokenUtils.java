@@ -23,7 +23,7 @@ public class TokenUtils {
     private String SECRET;
 
     @Value("${jwt.expires_in}")
-    private Long EXPIRES_IN;
+    private int EXPIRES_IN;
 
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
 

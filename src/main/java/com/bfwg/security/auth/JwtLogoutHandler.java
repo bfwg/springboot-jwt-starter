@@ -13,15 +13,24 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class JwtLogoutHandler implements LogoutHandler {
 
-    @Value("${jwt.cookie_name}")
-    private String AUTH_COOKIE;
+    @Value("${app.user_cookie}")
+    private String USER_COOKIE;
+
+    @Value("${jwt.token_cookie}")
+    private String TOKEN_COOKIE;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        Cookie cookie = new Cookie( AUTH_COOKIE, null ); // Not necessary, but saves bandwidth.
-        cookie.setPath( "/" );
-        cookie.setHttpOnly( true );
-        cookie.setMaxAge( 0 ); // Don't set to -1 or it will become a session cookie!
-        response.addCookie(cookie);
+        // Erase cookies
+        Cookie authCookie = new Cookie( TOKEN_COOKIE, null ); // Not necessary, but saves bandwidth.
+        authCookie.setPath( "/" );
+        authCookie.setMaxAge( 0 ); // Don't set to -1 or it will become a session cookie!
+
+        Cookie userCookie = new Cookie( USER_COOKIE, null );
+        userCookie.setPath( "/" );
+        userCookie.setMaxAge( 0 );
+
+        response.addCookie(authCookie);
+        response.addCookie(userCookie);
     }
 }
