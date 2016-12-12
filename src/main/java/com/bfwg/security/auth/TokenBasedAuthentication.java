@@ -1,11 +1,8 @@
 package com.bfwg.security.auth;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Objects;
 
 /**
  * Created by fan.jin on 2016-11-11.

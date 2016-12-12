@@ -11,14 +11,14 @@
     </style>
 </head>
 <body ng-app="hello">
-  <div ng-controller="navigation as nav" ng-cloak class="ng-cloak">
-    <ul class="nav nav-pills" role="tablist">
-			<li ng-class="nav.tabClass('/')"><a href="#/" ng-click="nav.setSelectedTab('/')">home</a></li>
-			<li ng-class="nav.tabClass('/login')" ng-hide="authenticated"><a href="#/login" ng-click="nav.setSelectedTab('/login')">login</a></li>
-			<li ng-show="authenticated"><a href="" ng-click="nav.logout()">logout</a></li>
-		</ul>
-	</div>
-	<div ng-view class="container"></div>
+  <div class="container" ng-controller="navigation as nav" ng-cloak class="ng-cloak">
+        <ul style="margin-bottom: 20px;" class="nav nav-pills" role="tablist">
+            <li ng-class="nav.tabClass('/')"><a href="#/" ng-click="nav.setSelectedTab('/')">Home</a></li>
+            <li ng-class="nav.tabClass('/login')" ng-hide="authenticated"><a href="#/login" ng-click="nav.setSelectedTab('/login')">Login</a></li>
+            <li ng-show="authenticated"><a href="" ng-click="nav.logout()">logout</a></li>
+        </ul>
+        <div ng-view ></div>
+  </div>
   <!-- <script src="webjars/jquery/2.1.1/jquery.js"></script> -->
   <!-- <script src="webjars/bootstrap/3.3.7/js/bootstrap.js"></script> -->
   <script src="webjars/angularjs/1.5.8/angular.js"></script>

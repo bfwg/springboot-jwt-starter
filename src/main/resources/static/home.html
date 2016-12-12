@@ -1,7 +1,21 @@
 <h1>Greeting</h1>
 <div ng-show="authenticated">
-	<p>Welcome {{controller.user.firstname}}</p>
+	<p>Welcome <b>{{controller.user.firstname}}</b></p>
+	<p>Your authority(s)
+		<code ng-repeat="authority in controller.user.authorities">{{authority.authority | limitTo:999:5}}</code>
+	</p>
 </div>
 <div  ng-show="!authenticated">
 	<p>Login to see your greeting</p>
+</div>
+<div style="margin-bottom: 10px;">
+    <button type="button" class="btn btn-info" ng-click="controller.getUserInfo()">/user</button>
+    <button type="button" class="btn btn-info" ng-click="controller.getAllUserInfo()">/user/all</button>
+</div>
+<div class="alert {{controller.responseBoxClass}}" ng-show="controller.serverResponse">
+    <b>Server Response:</b>
+    <pre>Path: /{{controller.serverResponse.config.url}}</pre>
+    <pre>Method: {{controller.serverResponse.config.method}}</pre>
+    <pre>Status: {{controller.serverResponse.status}}</pre>
+    <pre>Data: {{controller.serverResponse.data}}</pre>
 </div>

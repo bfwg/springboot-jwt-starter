@@ -17,12 +17,45 @@ angular.module('hello', [ 'ngRoute', 'authModule' ])
 
 .controller('home', function($rootScope, $http, authentication) {
   var self = this;
+  self.serverResponse = '';
+  self.responseBoxClass = '';
   $rootScope.authenticated = authentication.isAuthenticated();
   if ($rootScope.authenticated) {
     authentication.getUser()
     .then(function(response) {
+			console.log(response);
       self.user = response.data;
     });
+  }
+
+  self.getUserInfo = function() {
+		$http.get('user')
+		.then(function(response) {
+			setResponse(response, true);
+		})
+		.catch(function(response) {
+			setResponse(response, false);
+		});
+  }
+
+  self.getAllUserInfo = function() {
+		$http.get('user/all')
+		.then(function(response) {
+			setResponse(response, true);
+		})
+		.catch(function(response) {
+			setResponse(response, false);
+		});
+  }
+
+  setResponse = function(res, success) {
+    if (success) {
+			self.responseBoxClass = 'alert-success';
+    } else {
+			self.responseBoxClass = 'alert-danger';
+    }
+		self.serverResponse = res;
+		self.serverResponse.data = JSON.stringify(res.data, null, 2);
   }
 
   // $http.get('/resource/').then(function(response) {
@@ -30,12 +63,10 @@ angular.module('hello', [ 'ngRoute', 'authModule' ])
   // });
 })
 
-.controller('navigation', function($scope, $rootScope, $http, $location, $httpParamSerializerJQLike, authentication) {
-
+.controller('navigation', function($rootScope, $http, $location, $httpParamSerializerJQLike, authentication) {
   var self = this
-  self.selectedTab = $location.path();
-
-  console.log(self.selectedTab);
+  $rootScope.authenticated = authentication.isAuthenticated();
+  $rootScope.selectedTab = $location.path();
 
   self.credentials = {};
   self.login = function() {
@@ -49,44 +80,44 @@ angular.module('hello', [ 'ngRoute', 'authModule' ])
       }
     })
     .then(function(res) {
-      $scope.apply(function() {
-        $rootScope.authenticated = true;
-        $location.path("/");
-        self.selectedTab = "/";
-        self.error = false;
-      });
+      $rootScope.authenticated = true;
+      $location.path("#/");
+      $rootScope.selectedTab = "/";
+      self.error = false;
     })
     .catch(function() {
-      $scope.apply(function() {
-        $rootScope.authenticated = false;
-        $location.path("/login");
-        self.selectedTab = "/login";
-        self.error = true;
-      });
+      $rootScope.authenticated = false;
+      $location.path("/login");
+      $rootScope.selectedTab = "/login";
+      self.error = true;
     });
   };
-
 
   self.logout = function() {
     $http.post('logout', {}).finally(function() {
       $rootScope.authenticated = false;
       $location.path("#/");
-      self.selectedTab = "/";
+      $rootScope.selectedTab = "/";
     });
   }
 
   self.setSelectedTab = function(tab) {
-    self.selectedTab = tab;
+    $rootScope.selectedTab = tab;
   }
 
   self.tabClass = function(tab) {
-    if (self.selectedTab == tab) {
+    if ($rootScope.selectedTab == tab) {
       return "active";
     } else {
       return "";
     }
   }
 
+  if ($rootScope.authenticated) {
+    $location.path('/');
+    $rootScope.selectedTab = '/';
+    return;
+  }
 });
 
 angular.module('authModule', [ 'ngCookies' ])
