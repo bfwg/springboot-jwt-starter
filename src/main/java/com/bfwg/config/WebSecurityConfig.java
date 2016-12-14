@@ -59,7 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint ).and()
                 .addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
                 .authorizeRequests()
-                    .antMatchers("/", "/index.html", "/login.html", "/home.html", "/index2.html").permitAll()
+                    .antMatchers("/", "/index.html", "/login.html", "/home.html").permitAll()
                   .anyRequest()
                     .authenticated().and()
                 .formLogin()

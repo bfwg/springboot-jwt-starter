@@ -1,122 +1,133 @@
+angular.module('hello', [ 'ngRoute', 'authModule' ])
+  .config(function($routeProvider, $httpProvider) {
 
-$(function () {
-  var TOKEN_KEY = "access_token"
-  var $getToken = $("#getToken");
-  var $getClaim = $("#getClaim");
-  $("#dashboard").hide();
-  $("#login-card").hide();
-  if (getAccessToken()) {
-    showDashboard(getAccessToken());
-  } else {
-    showLogin();
-  }
-  // fake login
+    $routeProvider.when('/', {
+      templateUrl : 'home.html',
+      controller : 'home',
+      controllerAs: 'controller'
+    }).when('/login', {
+      templateUrl : 'login.html',
+      controller : 'navigation',
+      controllerAs: 'controller'
+    }).otherwise('/');
 
+    $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 
-  $("#loginForm").submit(function(e) {
-    e.preventDefault();
-    $.post( "/login", $(this).serialize(), function(data, textStatus) {
-      localStorage.setItem(TOKEN_KEY, data.token);
-      // showTokenInformation(data);
-    });
-  });
+  })
 
-  $('#signoutButton').click(function(){
-    localStorage.removeItem(TOKEN_KEY);
-    showLogin();
-  });
-
-  $('#parseToken').click(function(){
-    $.ajax({
-      url: "/parse-token",
-      type: "GET",
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      headers: createAuthorizationTokenHeader(),
-      success: function (data) {
-        console.log(data);
-      },
-      error: function (err) {
-        console.log(err);
-      }
-    });
-  });
-
-  $('#getUser').click(function(){
-    $.ajax({
-      url: "/whoami",
-      type: "GET",
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      headers: createAuthorizationTokenHeader(),
-      success: function (data) {
-        console.log(data);
-      },
-      error: function (err) {
-        console.log(err);
-      }
-    });
-  });
-
-
-  $('#getAllUser').click(function(){
-    $.ajax({
-      url: "/user/all",
-      type: "GET",
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      headers: createAuthorizationTokenHeader(),
-      success: function (data) {
-        console.log(data);
-      },
-      error: function (err) {
-        console.log(err);
-      }
-    });
-  });
-
-  function getAccessToken() {
-    return localStorage.getItem(TOKEN_KEY);
-  }
-
-  function showLogin(token_info) {
-    $("#login-card").show();
-    $("#dashboard").hide();
-  }
-
-  function showDashboard(token_info) {
-
-    $.ajax({
-      url: "/parse-token",
-      type: "GET",
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      headers: createAuthorizationTokenHeader(),
-      success: function (data) {
-        $("#dashboard").show();
-        $("#token").text(jsonBeautifier(token_info));
-        $("#token-header").text(jsonBeautifier(data.header));
-        $("#token-payload").text(jsonBeautifier(data.payload));
-        $("#token-signature").text(jsonBeautifier(data.signature));
-        $("#login-card").hide();
-      },
-      error: function (err) {
-        console.log(err);
-      }
+.controller('home', function($rootScope, $http, authentication) {
+  var self = this;
+  self.serverResponse = '';
+  self.responseBoxClass = '';
+  $rootScope.authenticated = authentication.isAuthenticated();
+  if ($rootScope.authenticated) {
+    authentication.getUser()
+    .then(function(response) {
+			console.log(response);
+      self.user = response.data;
     });
   }
 
-  function jsonBeautifier(str) {
-    return JSON.stringify(str, null, 2);
+  self.getUserInfo = function() {
+		$http.get('user')
+		.then(function(response) {
+			setResponse(response, true);
+		})
+		.catch(function(response) {
+			setResponse(response, false);
+		});
   }
 
-  function createAuthorizationTokenHeader() {
-      var token = getAccessToken();
-      if (token) {
-          return {"Authorization": "Bearer " + token};
-      } else {
-          return {};
-      }
+  self.getAllUserInfo = function() {
+		$http.get('user/all')
+		.then(function(response) {
+			setResponse(response, true);
+		})
+		.catch(function(response) {
+			setResponse(response, false);
+		});
+  }
+
+  setResponse = function(res, success) {
+    if (success) {
+			self.responseBoxClass = 'alert-success';
+    } else {
+			self.responseBoxClass = 'alert-danger';
     }
+		self.serverResponse = res;
+		self.serverResponse.data = JSON.stringify(res.data, null, 2);
+  }
 
+  // $http.get('/resource/').then(function(response) {
+    // self.greeting = response.data;
+  // });
+})
+
+.controller('navigation', function($rootScope, $http, $location, $httpParamSerializerJQLike, authentication) {
+  var self = this
+  $rootScope.authenticated = authentication.isAuthenticated();
+  $rootScope.selectedTab = $location.path();
+
+  self.credentials = {};
+  self.login = function() {
+    // We are using formLogin in our backend, so here we need to serialize our form data
+    $http({
+      url: 'login',
+      method: 'POST',
+      data: $httpParamSerializerJQLike(self.credentials),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    .then(function(res) {
+      $rootScope.authenticated = true;
+      $location.path("#/");
+      $rootScope.selectedTab = "/";
+      self.error = false;
+    })
+    .catch(function() {
+      $rootScope.authenticated = false;
+      $location.path("/login");
+      $rootScope.selectedTab = "/login";
+      self.error = true;
+    });
+  };
+
+  self.logout = function() {
+    $http.post('logout', {}).finally(function() {
+      $rootScope.authenticated = false;
+      $location.path("#/");
+      $rootScope.selectedTab = "/";
+    });
+  }
+
+  self.setSelectedTab = function(tab) {
+    $rootScope.selectedTab = tab;
+  }
+
+  self.tabClass = function(tab) {
+    if ($rootScope.selectedTab == tab) {
+      return "active";
+    } else {
+      return "";
+    }
+  }
+
+  if ($rootScope.authenticated) {
+    $location.path('/');
+    $rootScope.selectedTab = '/';
+    return;
+  }
+});
+
+angular.module('authModule', [ 'ngCookies' ])
+.factory('authentication', function($http, $cookies) {
+  return {
+    isAuthenticated: function() {
+      return !!$cookies.get('c_user');
+    },
+    getUser: function() {
+      return $http.get('user')
+    }
+  };
 });

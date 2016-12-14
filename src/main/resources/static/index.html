@@ -1,104 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>Springboot JWT Demo</title>
-
-    <link rel="stylesheet" href="webjars/material-design-lite/1.2.1/material.min.css">
+    <title>Springboot Security JSON Web Token Example</title>
+    <link rel="stylesheet" href="webjars/bootstrap/3.3.7/css/bootstrap.css">
     <style type="text/css">
-      pre {
-        margin: 0;
-        white-space: pre-wrap;
-        white-space: -moz-pre-wrap;
-        white-space: -pre-wrap;
-        white-space: -o-pre-wrap;
-        word-wrap: break-word;
-      }
-
-      .container {
-        width: 100%;
-        text-align: center;
-      }
-
-      .mdl-card {
-        padding: 25px;
-      }
-
-      .token-card {
-        flex: 1;
-        text-align: left;
-        display: inline-block;
-        margin: 10px;
-      }
-
-      .token-card:nth-of-type(2) {
-        margin-bottom: 0px;
-      }
-
-      .token-detail {
-        padding: 20px;
-        width: 100%;
-        margin-bottom: 10px;
-        min-height: 0px;
-        background-color: pink;
-      }
-
-      #dashboard {
-      }
-
-      #parse-token {
-        display: flex;
-      }
+    [ng\:cloak], [ng-cloak], .ng-cloak {
+      display: none !important;
+    }
     </style>
 </head>
-<body>
-  <div class="container">
-    <div id="login-card" class="mdl-card mdl-shadow--2dp">
-      <form id="loginForm">
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-          <input class="mdl-textfield__input" type="text" name="username">
-          <label class="mdl-textfield__label" for="username">Username</label>
-        </div>
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-          <input class="mdl-textfield__input" type="password" name="password">
-          <label class="mdl-textfield__label" for="passowrd">Password</label>
-        </div>
-        <button type="submit" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-          Login
-        </button>
-      </form>
-    </div>
-
-    <div id="dashboard">
-      <div id="parse-token">
-        <div class="token-card mdl-card mdl-shadow--2dp" class="mdl-card mdl-shadow--2dp">
-          <pre id="token"> </pre>
-        </div>
-        <div class="token-card">
-          <div class="token-detail  mdl-card mdl-shadow--2dp">
-            <pre id="token-header"> </pre>
-          </div>
-          <div class="token-detail  mdl-card mdl-shadow--2dp">
-            <pre id="token-payload"> </pre>
-          </div>
-          <div class="token-detail  mdl-card mdl-shadow--2dp">
-            <pre id="token-signature"> </pre>
-          </div>
-        </div>
-      </div>
-      <div>
-        <button id="parseToken">PARSE TOKEN</button>
-        <button id="getUser">GET User</button>
-        <button id="getAllUser">GET All User</button>
-        <button id="signoutButton">Sign Out</button>
-      </div>
-    </div>
-
+<body ng-app="hello">
+  <div class="container" ng-controller="navigation as nav" ng-cloak class="ng-cloak">
+        <ul style="margin-bottom: 20px;" class="nav nav-pills" role="tablist">
+            <li ng-class="nav.tabClass('/')"><a href="#/" ng-click="nav.setSelectedTab('/')">Home</a></li>
+            <li ng-class="nav.tabClass('/login')" ng-hide="authenticated"><a href="#/login" ng-click="nav.setSelectedTab('/login')">Login</a></li>
+            <li ng-show="authenticated"><a href="" ng-click="nav.logout()">logout</a></li>
+        </ul>
+        <div ng-view ></div>
   </div>
-
-<script src="webjars/jquery/2.1.1/jquery.min.js"></script>
-<script src="webjars/material-design-lite/1.2.1/material.min.js"></script>
-
-<script src="js/app.js"></script>
+  <!-- <script src="webjars/jquery/2.1.1/jquery.js"></script> -->
+  <!-- <script src="webjars/bootstrap/3.3.7/js/bootstrap.js"></script> -->
+  <script src="webjars/angularjs/1.5.8/angular.js"></script>
+  <script src="webjars/angular-route/1.5.9/angular-route.js"></script>
+  <script src="webjars/angular-cookies/1.6.0/angular-cookies.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+  </script>
 </body>
+
 </html>
