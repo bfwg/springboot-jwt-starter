@@ -14,6 +14,15 @@ There are two built-in user accounts to demonstrate the differing levels of acce
 User - user:123
 Admin - admin:123
 ```
+# Table of Contents
+* [File Structure](#file-structure)
+* [Getting Started](#getting-started)
+    * [Dependencies](#dependencies)
+    * [Installing](#installing)
+    * [Running the app](#running-the-app)
+* [Configuration](#configuration)
+* [JSON Web Token](#json-web-token)
+
 
 JWT Tokens are configured to expire after 10 minutes, you can get a new token by sign in again. They are saved in a http-only cookie instead of localstorage thi will prevent csrf attacks
 
