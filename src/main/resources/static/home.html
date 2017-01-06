@@ -1,13 +1,14 @@
-<h1>Greeting</h1>
+<h1>Springboot Security JWT</h1>
 <div ng-show="authenticated">
-	<p>Welcome <b>{{controller.user.firstname}}</b></p>
+	<p>Welcome <b>{{controller.user.firstname}} {{controller.user.lastname}}</b></p>
 	<p>Your authority(s)
 		<code ng-repeat="authority in controller.user.authorities">{{authority.authority | limitTo:999:5}}</code>
 	</p>
 </div>
 <div  ng-show="!authenticated">
-	<p>Login to see your greeting</p>
+	<p>You are an anonymous user.</p>
 </div>
+<p>Click the links below and see the result.</p>
 <div style="margin-bottom: 10px;">
     <button type="button" class="btn btn-info" ng-click="controller.getUserInfo()">/user</button>
     <button type="button" class="btn btn-info" ng-click="controller.getAllUserInfo()">/user/all</button>

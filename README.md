@@ -4,7 +4,7 @@
 Springboot-jwt-demo is a demonstration of a completely stateless and RESTful token-based authorization system using JSON Web Tokens (JWT) and Springboot.
 
 ##Requirements
-Cerberus requires Maven and Java 1.7 or greater.
+Requires Maven and Java 1.7 or greater.
 
 ##Usage
 To use start Springboot-jwt-demo, run in the terminal `mvn spring-boot:run`. Springboot-jwt-demo will now be running at `http://localhost:8080`

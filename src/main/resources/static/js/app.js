@@ -1,5 +1,5 @@
 angular.module('hello', [ 'ngRoute', 'authModule' ])
-  .config(function($routeProvider, $httpProvider) {
+  .config(function($routeProvider, $httpProvider, $locationProvider) {
 
     $routeProvider.when('/', {
       templateUrl : 'home.html',
@@ -12,7 +12,6 @@ angular.module('hello', [ 'ngRoute', 'authModule' ])
     }).otherwise('/');
 
     $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
-
   })
 
 .controller('home', function($rootScope, $http, authentication) {
@@ -23,7 +22,6 @@ angular.module('hello', [ 'ngRoute', 'authModule' ])
   if ($rootScope.authenticated) {
     authentication.getUser()
     .then(function(response) {
-			console.log(response);
       self.user = response.data;
     });
   }
@@ -66,7 +64,7 @@ angular.module('hello', [ 'ngRoute', 'authModule' ])
 .controller('navigation', function($rootScope, $http, $location, $httpParamSerializerJQLike, authentication) {
   var self = this
   $rootScope.authenticated = authentication.isAuthenticated();
-  $rootScope.selectedTab = $location.path();
+  $rootScope.selectedTab = $location.path() || '/';
 
   self.credentials = {};
   self.login = function() {
