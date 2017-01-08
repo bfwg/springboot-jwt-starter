@@ -3,64 +3,91 @@
 ##About
 Springboot-jwt-demo is a demonstration of a completely stateless and RESTful token-based authorization system using JSON Web Tokens (JWT) and Springboot.
 
-##Requirements
-Requires Maven and Java 1.7 or greater.
+### Quick start
+**Make sure you have Maven and Java 1.7 or greater**
 
-# Table of Contents
-* [File Structure](#file-structure)
-* [Getting Started](#getting-started)
-    * [Dependencies](#dependencies)
-    * [Installing](#installing)
-    * [Running the app](#running-the-app)
-* [Configuration](#configuration)
-* [JSON Web Token](#json-web-token)
+```bash
+# clone our repo
+# --depth 1 removes all but one .git commit history
+git clone --depth 1 https://github.com/bfwg/springboot-security-jwt.git
+
+# change directory to our repo
+cd springboot-security-jwt
+
+# install the repo with mvn
+mvn install
+
+# start the server
+mvn spring-boot:run
+
+# the app will be running on port 8080
+# there are two built-in user accounts to demonstrate the differing levels of access to the endpoints:
+# - User - user:123
+# - Admin - admin:123
+```
+
+
+### File Structure
 ```
 springboot-security-jwt/
  ├──src/                                                             * our source files 
- |   ├──main                                                         * main application
- │   │   ├──java.com.bfwg                                            * java backend files
- |   │   │   ├──config                                               * our configuration folder
- |   │   │   │   └──WebSecurityConfig.java            
- |   │   │   ├──model                                                * model folder
- |   │   │   │   ├──Authority.java  
- |   │   │   │   ├──CustomUserDetail.java  
- |   │   │   │   └──User.java  
+ |   ├──main                                                         
+ │   │   ├──java.com.bfwg                                            
+ |   │   │   ├──config                                               
+ |   │   │   │   └──WebSecurityConfig.java                           * config file for filter, custom userSerivce etc.
+ |   │   │   ├──model                                                
+ |   │   │   │   ├──Authority.java                                   
+ |   │   │   │   ├──CustomUserDetail.java                            * custom UserDetail implemtation
+ |   │   │   │   └──User.java                                        * our main user model.
  |   │   │   ├──repository                                           * repositories folder for accessing database
- |   │   │   │   └──UserRepository.java  
+ |   │   │   │   └──UserRepository.java                              
  |   │   │   ├──rest                                                 * rest endpoint folder
- |   │   │   │   └──UserController.java  
+ |   │   │   │   └──UserController.java                              * REST controller to handle User related requests
  |   │   │   ├──security                                             * Security related folder(JWT, filters)
- |   │   │   │   ├──auth
- |   │   │   │   │   ├──AuthenticationFailureHandler.java  
- |   │   │   │   │   ├──AuthenticationSuccessHandler.java  
- |   │   │   │   │   ├──JwtLogoutHandler.java  
- |   │   │   │   │   ├──RestAuthenticationEntryPoint.java  
- |   │   │   │   │   ├──TokenAuthenticationFilter.java  
- |   │   │   │   │   └──TokenBasedAuthentication.java  
- |   │   │   │   └──TokenUtils.java  
+ |   │   │   │   ├──auth                                             
+ |   │   │   │   │   ├──AuthenticationFailureHandler.java            * login fail handler, configrued in WebSecurityConfig
+ |   │   │   │   │   ├──AuthenticationSuccessHandler.java            * login success handler, configrued in WebSecurityConfig
+ |   │   │   │   │   ├──JwtLogoutHandler.java                        * logout handler, configrued in WebSecurityConfig
+ |   │   │   │   │   ├──RestAuthenticationEntryPoint.java            * handle auth exceptions, like invalid token etc.
+ |   │   │   │   │   ├──TokenAuthenticationFilter.java               * the JWT token filter, configured in WebSecurityConfig
+ |   │   │   │   │   └──TokenBasedAuthentication.java                * this is our custom Authentication class and it extends AbstractAuthenticationToken.
+ |   │   │   │   └──TokenUtils.java                                  * token helper class
  |   │   │   ├──service               
  |   │   │   │   ├──impl
- |   │   │   │   │   ├──CustomUserDetailsService.java  
+ |   │   │   │   │   ├──CustomUserDetailsService.java                * custom UserDatilsService implementataion, tells formLogin() where to check username/password
  |   │   │   │   │   └──UserServiceImpl.java  
- |   │   │   │   └──UserService.java  
+ |   │   │   │   └──UserService.java                                    
  |   │   │   └──SpringbootSecurtiyApplication.java                   * Application main enterance
- |   │   └── recources                                               * static assets are served here(Angular and html templates)
+ |   │   └──recources                                               
+ |   │       ├──static                                               * static assets are served here(Angular and html templates)
+ |   │       ├──application.yml                                      * application variables are configured here
+ |   │       └──import.sql                                           * h2 database query(table creation)
  |   └──test                                                         * Junit test folder
  └──pom.xml                                                          * what maven uses to manage it's dependencies
 ```
+# Table of Contents
+* [File Structure](#file-structure)
+* [Configuration](#configuration)
+* [JSON Web Token](#json-web-token)
 
-##Usage
-To use start Springboot-jwt-demo, run in the terminal `mvn spring-boot:run`. Springboot-jwt-demo will now be running at `http://localhost:8080`
+### Configuration
+**WebSecurityConfig.java**
+- handles all the server-side authentication configurations.
+**application.yml**
+- handles all the application variables i.e the token expire time, token secret etc.
+- JWT Tokens are configured to expire after 10 minutes, you can get a new token by sign in again.
 
-There are two built-in user accounts to demonstrate the differing levels of access to the endpoints:
-```
-User - user:123
-Admin - admin:123
-```
-JWT Tokens are configured to expire after 10 minutes, you can get a new token by sign in again. They are saved in a http-only cookie instead of localstorage thi will prevent csrf attacks
+### JSON Web Token
+> JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.
+for more info, checkout https://jwt.io/
 
-The frontend code is based on [Spring Security and Angular JS](https://spring.io/guides/tutorials/spring-security-and-angular-js/)
+This project is inspried by 
+- [Stormpath](https://stormpath.com/blog/token-auth-spa)
+- [Cerberus](https://github.com/brahalla/Cerberus)
+- [jwt-spring-security-demo](https://github.com/szerhusenBC/jwt-spring-security-demo)
 
-[Stormpath article](https://stormpath.com/blog/token-auth-spa)
+___
 
-The project is heavyly inspired by [Cerberus](https://github.com/brahalla/Cerberus).
+# License
+ [MIT](/LICENSE)
+
