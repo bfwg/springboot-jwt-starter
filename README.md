@@ -1,7 +1,15 @@
-## Springboot-jwt-demo
-
-##About
-Springboot-jwt-demo is a demonstration of a completely stateless and RESTful token-based authorization system using JSON Web Tokens (JWT) and Springboot.
+```
+                _             _                 _       _          _         _             _            
+ ___ _ __  _ __(_)_ __   __ _| |__   ___   ___ | |_    (_)_      _| |_   ___| |_ __ _ _ __| |_ ___ _ __ 
+/ __| '_ \| '__| | '_ \ / _` | '_ \ / _ \ / _ \| __|   | \ \ /\ / / __| / __| __/ _` | '__| __/ _ \ '__|
+\__ \ |_) | |  | | | | | (_| | |_) | (_) | (_) | |_    | |\ V  V /| |_  \__ \ || (_| | |  | ||  __/ |   
+|___/ .__/|_|  |_|_| |_|\__, |_.__/ \___/ \___/ \__|  _/ | \_/\_/  \__| |___/\__\__,_|_|   \__\___|_|   
+    |_|                 |___/                        |__/                                               
+```
+> An Springboot security JWT starter kit featuring [AngularJS](https://angularjs.org/) and [Springboot](https://projects.spring.io/spring-boot/) ([JSON Web Token](https://jwt.io/))
+<p align="center">
+    <img width="800" alt="Springboot JWT Starter" src="https://github.com/bfwg/storehouse/blob/master/springboot-jwt-starter.png?raw=true">
+</p>
 
 ### Quick start
 **Make sure you have Maven and Java 1.7 or greater**
@@ -57,7 +65,7 @@ springboot-security-jwt/
  |   │   │   │   │   ├──CustomUserDetailsService.java                * custom UserDatilsService implementataion, tells formLogin() where to check username/password
  |   │   │   │   │   └──UserServiceImpl.java  
  |   │   │   │   └──UserService.java                                    
- |   │   │   └──SpringbootSecurtiyApplication.java                   * Application main enterance
+ |   │   │   └──Application.java                   * Application main enterance
  |   │   └──recources                                               
  |   │       ├──static                                               * static assets are served here(Angular and html templates)
  |   │       ├──application.yml                                      * application variables are configured here
