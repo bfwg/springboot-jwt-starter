@@ -1,6 +1,10 @@
 package com.bfwg.config;
 
-import com.bfwg.security.auth.*;
+import com.bfwg.security.auth.AuthenticationFailureHandler;
+import com.bfwg.security.auth.AuthenticationSuccessHandler;
+import com.bfwg.security.auth.JwtLogoutHandler;
+import com.bfwg.security.auth.RestAuthenticationEntryPoint;
+import com.bfwg.security.auth.TokenAuthenticationFilter;
 import com.bfwg.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +18,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * Created by fan.jin on 2016-10-19.
