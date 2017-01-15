@@ -7,6 +7,7 @@
     |_|                 |___/                        |__/
 ```
 > An Springboot security JWT starter kit featuring [AngularJS](https://angularjs.org/) and [Springboot](https://projects.spring.io/spring-boot/) ([JSON Web Token](https://jwt.io/))
+
 ### [Live Demo](http://fanjin.computer:8080)
 <p align="center">
     <img width="800" alt="Springboot JWT Starter" src="https://github.com/bfwg/storehouse/blob/master/springboot-jwt-starter.png?raw=true">
