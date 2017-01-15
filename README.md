@@ -37,7 +37,7 @@ mvn spring-boot:run
 
 ### File Structure
 ```
-springboot-security-jwt/
+springboot-jwt-starter/
  ├──src/                                                             * our source files 
  |   ├──main                                                         
  │   │   ├──java.com.bfwg                                            
