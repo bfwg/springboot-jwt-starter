@@ -16,7 +16,7 @@ public class JwtLogoutHandler implements LogoutHandler {
     @Value("${app.user_cookie}")
     private String USER_COOKIE;
 
-    @Value("${jwt.token_cookie}")
+    @Value("${jwt.cookie}")
     private String TOKEN_COOKIE;
 
     @Override

@@ -1,17 +1,13 @@
 package com.bfwg.security.auth;
 
-import com.bfwg.security.TokenUtils;
-import org.apache.catalina.security.SecurityUtil;
+import com.bfwg.security.TokenHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -28,11 +24,14 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final Log logger = LogFactory.getLog(this.getClass());
 
-    @Value("${jwt.token_cookie}")
+    @Value("${jwt.header}")
+    private String AUTH_HEADER;
+
+    @Value("${jwt.cookie}")
     private String AUTH_COOKIE;
 
     @Autowired
-    TokenUtils jwtTokenUtil;
+    TokenHelper tokenHelper;
 
     @Autowired
     UserDetailsService userDetailsService;
@@ -49,7 +48,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
          *  Getting the token from Authentication header
          *  e.g Bearer your_token
          */
-        String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader(AUTH_HEADER);
         if ( authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }
@@ -83,7 +82,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         String authToken = getToken( request );
         // get username from token
-        String username = jwtTokenUtil.getUsernameFromToken( authToken );
+        String username = tokenHelper.getUsernameFromToken( authToken );
         if ( username != null ) {
             // get user
             UserDetails userDetails = userDetailsService.loadUserByUsername( username );

@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.bfwg.model.UserTokenState;
 import com.bfwg.model.User;
-import com.bfwg.security.TokenUtils;
+import com.bfwg.security.TokenHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,14 +26,14 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
     @Value("${jwt.expires_in}")
     private int EXPIRES_IN;
 
-    @Value("${jwt.token_cookie}")
+    @Value("${jwt.cookie}")
     private String TOKEN_COOKIE;
 
 	@Value("${app.user_cookie}")
 	private String USER_COOKIE;
 
 	@Autowired
-    TokenUtils tokenUtils;
+	TokenHelper tokenHelper;
 
 	@Autowired
 	ObjectMapper objectMapper;
@@ -44,7 +44,7 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 		clearAuthenticationAttributes(request);
 		User user = (User)authentication.getPrincipal();
 
-		String jws = tokenUtils.generateToken( user.getUsername() );
+		String jws = tokenHelper.generateToken( user.getUsername() );
 
         // Create token auth Cookie
         Cookie authCookie = new Cookie( TOKEN_COOKIE, ( jws ) );

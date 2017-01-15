@@ -3,8 +3,9 @@ app:
   user_cookie: c_user
 
 jwt:
+  header: Authorization
   expires_in: 600 # 10 minutes
   secret: queenvictoria
-  token_cookie: AUTH-TOKEN
+  cookie: AUTH-TOKEN
 
 

@@ -6,14 +6,16 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
 import java.util.Date;
+
 
 /**
  * Created by fan.jin on 2016-10-19.
  */
 
 @Component
-public class TokenUtils {
+public class TokenHelper {
 
     @Value("${app.name}")
     private String APP_NAME;
@@ -23,6 +25,8 @@ public class TokenUtils {
 
     @Value("${jwt.expires_in}")
     private int EXPIRES_IN;
+
+    private final long currentTimeMillis = System.currentTimeMillis();
 
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
 
@@ -63,10 +67,10 @@ public class TokenUtils {
 
 
     private Date generateCurrentDate() {
-        return new Date(System.currentTimeMillis());
+        return new Date(currentTimeMillis);
     }
 
     private Date generateExpirationDate() {
-        return new Date(System.currentTimeMillis() + this.EXPIRES_IN * 1000);
+        return new Date(currentTimeMillis + this.EXPIRES_IN * 1000);
     }
 }
