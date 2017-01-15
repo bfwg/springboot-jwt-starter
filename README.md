@@ -65,7 +65,7 @@ springboot-jwt-starter/
  |   │   │   │   │   ├──CustomUserDetailsService.java           * custom UserDatilsService implementataion, tells formLogin() where to check username/password
  |   │   │   │   │   └──UserServiceImpl.java
  |   │   │   │   └──UserService.java
- |   │   │   └──Application.java              * Application main enterance
+ |   │   │   └──Application.java                                * Application main enterance
  |   │   └──recources
  |   │       ├──static                                          * static assets are served here(Angular and html templates)
  |   │       ├──application.yml                                 * application variables are configured here
