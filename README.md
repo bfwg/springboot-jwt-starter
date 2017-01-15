@@ -1,10 +1,10 @@
 ```
-                _             _                 _       _          _         _             _            
- ___ _ __  _ __(_)_ __   __ _| |__   ___   ___ | |_    (_)_      _| |_   ___| |_ __ _ _ __| |_ ___ _ __ 
+                _             _                 _       _          _         _             _
+ ___ _ __  _ __(_)_ __   __ _| |__   ___   ___ | |_    (_)_      _| |_   ___| |_ __ _ _ __| |_ ___ _ __
 / __| '_ \| '__| | '_ \ / _` | '_ \ / _ \ / _ \| __|   | \ \ /\ / / __| / __| __/ _` | '__| __/ _ \ '__|
-\__ \ |_) | |  | | | | | (_| | |_) | (_) | (_) | |_    | |\ V  V /| |_  \__ \ || (_| | |  | ||  __/ |   
-|___/ .__/|_|  |_|_| |_|\__, |_.__/ \___/ \___/ \__|  _/ | \_/\_/  \__| |___/\__\__,_|_|   \__\___|_|   
-    |_|                 |___/                        |__/                                               
+\__ \ |_) | |  | | | | | (_| | |_) | (_) | (_) | |_    | |\ V  V /| |_  \__ \ || (_| | |  | ||  __/ |
+|___/ .__/|_|  |_|_| |_|\__, |_.__/ \___/ \___/ \__|  _/ | \_/\_/  \__| |___/\__\__,_|_|   \__\___|_|
+    |_|                 |___/                        |__/
 ```
 > An Springboot security JWT starter kit featuring [AngularJS](https://angularjs.org/) and [Springboot](https://projects.spring.io/spring-boot/) ([JSON Web Token](https://jwt.io/))
 <p align="center">
@@ -38,40 +38,40 @@ mvn spring-boot:run
 ### File Structure
 ```
 springboot-jwt-starter/
- ├──src/                                                             * our source files 
- |   ├──main                                                         
- │   │   ├──java.com.bfwg                                            
- |   │   │   ├──config                                               
- |   │   │   │   └──WebSecurityConfig.java                           * config file for filter, custom userSerivce etc.
- |   │   │   ├──model                                                
- |   │   │   │   ├──Authority.java                                   
- |   │   │   │   ├──CustomUserDetail.java                            * custom UserDetail implemtation
- |   │   │   │   └──User.java                                        * our main user model.
- |   │   │   ├──repository                                           * repositories folder for accessing database
- |   │   │   │   └──UserRepository.java                              
- |   │   │   ├──rest                                                 * rest endpoint folder
- |   │   │   │   └──UserController.java                              * REST controller to handle User related requests
- |   │   │   ├──security                                             * Security related folder(JWT, filters)
- |   │   │   │   ├──auth                                             
- |   │   │   │   │   ├──AuthenticationFailureHandler.java            * login fail handler, configrued in WebSecurityConfig
- |   │   │   │   │   ├──AuthenticationSuccessHandler.java            * login success handler, configrued in WebSecurityConfig
- |   │   │   │   │   ├──JwtLogoutHandler.java                        * logout handler, configrued in WebSecurityConfig
- |   │   │   │   │   ├──RestAuthenticationEntryPoint.java            * handle auth exceptions, like invalid token etc.
- |   │   │   │   │   ├──TokenAuthenticationFilter.java               * the JWT token filter, configured in WebSecurityConfig
- |   │   │   │   │   └──TokenBasedAuthentication.java                * this is our custom Authentication class and it extends AbstractAuthenticationToken.
- |   │   │   │   └──TokenUtils.java                                  * token helper class
- |   │   │   ├──service               
+ ├──src/                                                        * our source files
+ |   ├──main
+ │   │   ├──java.com.bfwg
+ |   │   │   ├──config
+ |   │   │   │   └──WebSecurityConfig.java                      * config file for filter, custom userSerivce etc.
+ |   │   │   ├──model
+ |   │   │   │   ├──Authority.java
+ |   │   │   │   ├──CustomUserDetail.java                       * custom UserDetail implemtation
+ |   │   │   │   └──User.java                                   * our main user model.
+ |   │   │   ├──repository                                      * repositories folder for accessing database
+ |   │   │   │   └──UserRepository.java
+ |   │   │   ├──rest                                            * rest endpoint folder
+ |   │   │   │   └──UserController.java                         * REST controller to handle User related requests
+ |   │   │   ├──security                                        * Security related folder(JWT, filters)
+ |   │   │   │   ├──auth
+ |   │   │   │   │   ├──AuthenticationFailureHandler.java       * login fail handler, configrued in WebSecurityConfig
+ |   │   │   │   │   ├──AuthenticationSuccessHandler.java       * login success handler, configrued in WebSecurityConfig
+ |   │   │   │   │   ├──JwtLogoutHandler.java                   * logout handler, configrued in WebSecurityConfig
+ |   │   │   │   │   ├──RestAuthenticationEntryPoint.java       * handle auth exceptions, like invalid token etc.
+ |   │   │   │   │   ├──TokenAuthenticationFilter.java          * the JWT token filter, configured in WebSecurityConfig
+ |   │   │   │   │   └──TokenBasedAuthentication.java           * this is our custom Authentication class and it extends AbstractAuthenticationToken.
+ |   │   │   │   └──TokenUtils.java                             * token helper class
+ |   │   │   ├──service
  |   │   │   │   ├──impl
- |   │   │   │   │   ├──CustomUserDetailsService.java                * custom UserDatilsService implementataion, tells formLogin() where to check username/password
- |   │   │   │   │   └──UserServiceImpl.java  
- |   │   │   │   └──UserService.java                                    
- |   │   │   └──Application.java                   * Application main enterance
- |   │   └──recources                                               
- |   │       ├──static                                               * static assets are served here(Angular and html templates)
- |   │       ├──application.yml                                      * application variables are configured here
- |   │       └──import.sql                                           * h2 database query(table creation)
- |   └──test                                                         * Junit test folder
- └──pom.xml                                                          * what maven uses to manage it's dependencies
+ |   │   │   │   │   ├──CustomUserDetailsService.java           * custom UserDatilsService implementataion, tells formLogin() where to check username/password
+ |   │   │   │   │   └──UserServiceImpl.java
+ |   │   │   │   └──UserService.java
+ |   │   │   └──Application.java              * Application main enterance
+ |   │   └──recources
+ |   │       ├──static                                          * static assets are served here(Angular and html templates)
+ |   │       ├──application.yml                                 * application variables are configured here
+ |   │       └──import.sql                                      * h2 database query(table creation)
+ |   └──test                                                    * Junit test folder
+ └──pom.xml                                                     * what maven uses to manage it's dependencies
 ```
 # Table of Contents
 * [File Structure](#file-structure)
@@ -89,7 +89,7 @@ springboot-jwt-starter/
 > JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.
 for more info, checkout https://jwt.io/
 
-This project is inspried by 
+This project is inspried by
 - [Stormpath](https://stormpath.com/blog/token-auth-spa)
 - [Cerberus](https://github.com/brahalla/Cerberus)
 - [jwt-spring-security-demo](https://github.com/szerhusenBC/jwt-spring-security-demo)
