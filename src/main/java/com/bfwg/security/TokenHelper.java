@@ -3,10 +3,10 @@ package com.bfwg.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.time.Clock;
 import java.util.Date;
 
 
@@ -25,8 +25,6 @@ public class TokenHelper {
 
     @Value("${jwt.expires_in}")
     private int EXPIRES_IN;
-
-    private final long currentTimeMillis = System.currentTimeMillis();
 
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
 
@@ -65,12 +63,15 @@ public class TokenHelper {
         return claims;
     }
 
+    private long getCurrentTimeMillis() {
+        return new DateTime().getMillis();
+    }
 
     private Date generateCurrentDate() {
-        return new Date(currentTimeMillis);
+        return new Date(getCurrentTimeMillis());
     }
 
     private Date generateExpirationDate() {
-        return new Date(currentTimeMillis + this.EXPIRES_IN * 1000);
+        return new Date(getCurrentTimeMillis() + this.EXPIRES_IN * 1000);
     }
 }
