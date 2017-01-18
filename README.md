@@ -22,7 +22,7 @@
 git clone --depth 1 https://github.com/bfwg/springboot-jwt-starter.git
 
 # change directory to our repo
-cd springboot-security-jwt
+cd springboot-jwt-starter
 
 # install the repo with mvn
 mvn install
