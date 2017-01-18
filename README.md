@@ -19,7 +19,7 @@
 ```bash
 # clone our repo
 # --depth 1 removes all but one .git commit history
-git clone --depth 1 https://github.com/bfwg/springboot-security-jwt.git
+git clone --depth 1 https://github.com/bfwg/springboot-jwt-starter.git
 
 # change directory to our repo
 cd springboot-security-jwt
