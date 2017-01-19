@@ -1,3 +1,7 @@
+[![Maintenance Status][status-image]][status-url]
+[status-image]: https://img.shields.io/badge/status-maintained-brightgreen.svg
+[status-url]: https://github.com/bfwg/relay-gallery
+
 ```
                 _             _                 _       _          _         _             _
  ___ _ __  _ __(_)_ __   __ _| |__   ___   ___ | |_    (_)_      _| |_   ___| |_ __ _ _ __| |_ ___ _ __
