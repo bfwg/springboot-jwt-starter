@@ -1,6 +1,6 @@
 
 [![Maintenance Status][status-image]][status-url]
-[![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/jellekralt/springboot-jwt-starter/blob/master/LICENSE)
+[![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bfwg/springboot-jwt-starter/blob/master/LICENSE)
 [status-image]: https://img.shields.io/badge/status-maintained-brightgreen.svg
 [status-url]: https://github.com/bfwg/relay-gallery
 
