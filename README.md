@@ -1,9 +1,3 @@
-
-[![Maintenance Status][status-image]][status-url]
-[![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bfwg/springboot-jwt-starter/blob/master/LICENSE)
-[status-image]: https://img.shields.io/badge/status-maintained-brightgreen.svg
-[status-url]: https://github.com/bfwg/springboot-jwt-starter
-
 ```
                 _             _                 _       _          _         _             _
  ___ _ __  _ __(_)_ __   __ _| |__   ___   ___ | |_    (_)_      _| |_   ___| |_ __ _ _ __| |_ ___ _ __
@@ -12,6 +6,7 @@
 |___/ .__/|_|  |_|_| |_|\__, |_.__/ \___/ \___/ \__|  _/ | \_/\_/  \__| |___/\__\__,_|_|   \__\___|_|
     |_|                 |___/                        |__/
 ```
+[![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bfwg/springboot-jwt-starter/blob/master/LICENSE)
 > An Springboot security JWT starter kit featuring [AngularJS](https://angularjs.org/) and [Springboot](https://projects.spring.io/spring-boot/) ([JSON Web Token](https://jwt.io/))
 
 ### [Live Demo](http://fanjin.computer:8080)
