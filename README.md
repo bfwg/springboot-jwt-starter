@@ -8,12 +8,17 @@
 ```
 [![Build Status](https://travis-ci.org/bfwg/springboot-jwt-starter.svg?branch=master)](https://travis-ci.org/bfwg/springboot-jwt-starter)
 [![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bfwg/springboot-jwt-starter/blob/master/LICENSE)
-> An Springboot security JWT starter kit featuring [AngularJS](https://angularjs.org/) and [Springboot](https://projects.spring.io/spring-boot/) ([JSON Web Token](https://jwt.io/))
+
+> A Springboot token-based security starter kit featuring [AngularJS](https://angularjs.org/) and [Springboot](https://projects.spring.io/spring-boot/) ([JSON Web Token](https://jwt.io/))
 
 ### [Live Demo](http://fanjin.computer:8080)
 <p align="center">
     <img width="800" alt="Springboot JWT Starter" src="https://github.com/bfwg/storehouse/blob/master/springboot-jwt-starter.png?raw=true">
 </p>
+
+> Token authentication is a more modern approach and is designed solve problems session IDs stored server-side can’t. Using tokens in place of session IDs can lower your server load, streamline permission management, and provide better tools for supporting a distributed or cloud-based infrastructure.
+>
+> -- <cite>Stormpath</cite>
 
 ### Quick start
 **Make sure you have Maven and Java 1.7 or greater**
