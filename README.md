@@ -6,6 +6,7 @@
 |___/ .__/|_|  |_|_| |_|\__, |_.__/ \___/ \___/ \__|  _/ | \_/\_/  \__| |___/\__\__,_|_|   \__\___|_|
     |_|                 |___/                        |__/
 ```
+[![Build Status](https://travis-ci.org/bfwg/springboot-jwt-starter.svg?branch=master)](https://travis-ci.org/bfwg/springboot-jwt-starter)
 [![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bfwg/springboot-jwt-starter/blob/master/LICENSE)
 > An Springboot security JWT starter kit featuring [AngularJS](https://angularjs.org/) and [Springboot](https://projects.spring.io/spring-boot/) ([JSON Web Token](https://jwt.io/))
 
@@ -82,11 +83,25 @@ springboot-jwt-starter/
 * [JSON Web Token](#json-web-token)
 
 ### Configuration
-**WebSecurityConfig.java**
-- handles all the server-side authentication configurations.
-**application.yml**
-- handles all the application variables i.e the token expire time, token secret etc.
-- JWT Tokens are configured to expire after 10 minutes, you can get a new token by sign in again.
+- **WebSecurityConfig.java**: The server-side authentication configurations.
+- **application.yml**: Application level properties i.e the token expire time, token secret etc. You can find a reference of all application properties [here](http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html).
+- **JWT token TTL**: JWT Tokens are configured to expire after 10 minutes, you can get a new token by signing in again.
+- **Using a different database**: This Starter kit is using an embedded H2 database that is automatically configured by Spring Boot. If you want to connect to another database you have to specify the connection in the *application.yml* in the resource directory. Here is an example for a MySQL DB:
+
+```
+spring:
+  jpa:
+    hibernate:
+      # possible values: validate | update | create | create-drop
+      ddl-auto: create-drop
+  datasource:
+    url: jdbc:mysql://localhost/myDatabase
+    username: myUser
+    password: myPassword
+    driver-class-name: com.mysql.jdbc.Driver
+```
+
+*Hint: For other databases like MySQL sequences don't work for ID generation. So you have to change the GenerationType in the entity beans to 'AUTO' or 'IDENTITY'.*
 
 ### JSON Web Token
 > JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.
