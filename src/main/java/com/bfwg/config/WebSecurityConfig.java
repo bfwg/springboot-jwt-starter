@@ -9,6 +9,7 @@ import com.bfwg.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -62,8 +63,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint ).and()
                 .addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
                 .authorizeRequests()
-                    .antMatchers("/", "/index.html", "/login.html", "/home.html").permitAll()
-                  .anyRequest()
+                .antMatchers(
+                        HttpMethod.GET,
+                        "/",
+                        "/*.html",
+                        "/favicon.ico",
+                        "/**/*.html",
+                        "/**/*.css",
+                        "/**/*.js"
+                ).permitAll()
+
+                .anyRequest()
                     .authenticated().and()
                 .formLogin()
                     .successHandler(authenticationSuccessHandler)

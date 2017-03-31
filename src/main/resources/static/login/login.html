@@ -2,14 +2,14 @@
     There was a problem logging in. Please try again.
 </div>
 <div class="row">
-    <form role="form" ng-submit="controller.login()" class="col-sm-6 col-lg-4">
+    <form role="form" ng-submit="login()" class="col-sm-6 col-lg-4">
         <div class="form-group">
             <label for="username">Username:</label>
-            <input type="text" placeholder="user/admin" class="form-control" id="username" name="username" ng-model="controller.credentials.username"/>
+            <input type="text" placeholder="user/admin" class="form-control" id="username" name="username" ng-model="credentials.username"/>
         </div>
         <div class="form-group">
             <label for="password">Password:</label>
-            <input type="password" placeholder="123" class="form-control" id="password" name="password" ng-model="controller.credentials.password"/>
+            <input type="password" placeholder="123" class="form-control" id="password" name="password" ng-model="credentials.password"/>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>

@@ -3,7 +3,7 @@
 
 <head>
     <base href="/">
-    <title>Springboot Security JSON Web Token Example</title>
+    <title>springboot-jwt-starter</title>
     <link rel="stylesheet" href="webjars/bootstrap/3.3.7/css/bootstrap.css">
     <style type="text/css">
     [ng\:cloak], [ng-cloak], .ng-cloak {
@@ -11,21 +11,25 @@
     }
     </style>
 </head>
-<body ng-app="hello">
-  <div class="container" ng-controller="navigation as nav" ng-cloak class="ng-cloak">
-        <ul style="margin-bottom: 20px;" class="nav nav-pills" role="tablist">
-            <li ng-class="nav.tabClass('/')"><a href="#/" ng-click="nav.setSelectedTab('/')">Home</a></li>
-            <li ng-class="nav.tabClass('/login')" ng-hide="authenticated"><a href="#/login" ng-click="nav.setSelectedTab('/login')">Login</a></li>
-            <li ng-show="authenticated"><a href="" ng-click="nav.logout()">logout</a></li>
-        </ul>
-        <div ng-view ></div>
+<body ng-app="myApp">
+  <div class="container" ng-controller="NavigationCtrl" ng-cloak class="ng-cloak">
+    <ul style="margin-bottom: 20px;" class="nav nav-pills" role="tablist">
+        <li ng-class="tabClass('/')"><a href="#/" ng-click="setSelectedTab('/')">Home</a></li>
+        <li ng-class="tabClass('/login')" ng-hide="authenticated"><a href="#/login" ng-click="setSelectedTab('/login')">Login</a></li>
+        <li ng-show="authenticated"><a href="" ng-click="logout()">logout</a></li>
+    </ul>
+    <div ng-view ></div>
   </div>
   <!-- <script src="webjars/jquery/2.1.1/jquery.js"></script> -->
   <!-- <script src="webjars/bootstrap/3.3.7/js/bootstrap.js"></script> -->
   <script src="webjars/angularjs/1.5.8/angular.js"></script>
   <script src="webjars/angular-route/1.5.9/angular-route.js"></script>
   <script src="webjars/angular-cookies/1.6.0/angular-cookies.js"></script>
-  <script src="js/app.js"></script>
+
+  <script src="app.js"></script>
+  <script src="dashboard/dashboard.js"></script>
+  <script src="login/login.js"></script>
+  <script src="services/auth.js"></script>
   <script>
   </script>
 </body>
