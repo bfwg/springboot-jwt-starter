@@ -15,6 +15,8 @@ angular.module('myApp.dashboard', ['ngRoute'])
     $scope.responseBoxClass = '';
 
     var setResponse = function(res, success) {
+      // sync auth state
+			$rootScope.authenticated = authService.isAuthenticated();
       if (success) {
         $scope.responseBoxClass = 'alert-success';
       } else {
@@ -32,7 +34,7 @@ angular.module('myApp.dashboard', ['ngRoute'])
     }
 
     $scope.getUserInfo = function() {
-      $http.get('user')
+      authService.getUser()
       .then(function(response) {
         setResponse(response, true);
       })
@@ -50,4 +52,5 @@ angular.module('myApp.dashboard', ['ngRoute'])
         setResponse(response, false);
       });
     }
+
   }]);

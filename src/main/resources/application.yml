@@ -4,7 +4,7 @@ app:
 
 jwt:
   header: Authorization
-  expires_in: 600 # 10 minutes
+  expires_in: 30 # 10 minutes
   secret: queenvictoria
   cookie: AUTH-TOKEN
 

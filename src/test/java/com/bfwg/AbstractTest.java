@@ -3,30 +3,26 @@ package com.bfwg;
 import com.bfwg.model.Authority;
 import com.bfwg.model.User;
 import com.bfwg.repository.UserRepository;
+import com.bfwg.security.auth.AnonAuthentication;
 import com.bfwg.security.auth.TokenBasedAuthentication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import org.junit.After;
 import org.junit.Before;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.junit4.SpringRunner;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
-@RunWith( SpringJUnit4ClassRunner.class )
-@SpringApplicationConfiguration( classes = Application.class )
-@WebIntegrationTest
-@Transactional
-@ActiveProfiles( "test" )
+@RunWith( SpringRunner.class )
+@SpringBootTest(classes = { Application.class })
 public abstract class AbstractTest {
 
 	@Autowired
@@ -39,6 +35,7 @@ public abstract class AbstractTest {
 	public final void beforeAbstractTest() {
 		securityContext = Mockito.mock( SecurityContext.class );
 		SecurityContextHolder.setContext( securityContext );
+		Mockito.when( securityContext.getAuthentication() ).thenReturn( new AnonAuthentication() );
 	}
 
 	@After

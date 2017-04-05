@@ -29,22 +29,22 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping( method = GET, value = "/user/{userId}" )
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> loadById( @PathVariable Long userId ) {
-        return Optional.ofNullable( this.userService.findById( userId ) )
-                .map( u -> new ResponseEntity<>( u, HttpStatus.OK ) )
-                .orElse( new ResponseEntity<>( HttpStatus.NOT_FOUND ) );
+    public User loadById( @PathVariable Long userId ) {
+        return this.userService.findById( userId );
     }
 
     @RequestMapping( method = GET, value= "/user/all")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<User>> loadAll() {
-        return Optional.ofNullable( this.userService.findAll() )
-                .map( u -> new ResponseEntity<>( u, HttpStatus.OK ) )
-                .orElse( new ResponseEntity<>( HttpStatus.NOT_FOUND ) );
+    public List<User> loadAll() {
+        return this.userService.findAll();
     }
 
-    @RequestMapping("/user")
+
+    /*
+     *  We are not using userService.findByUsername here(we could),
+     *  so it is good that we are making sure that the user has role "ROLE_USER"
+     *  to access this endpoint.
+     */
+    @RequestMapping("/whoami")
     @PreAuthorize("hasRole('USER')")
     public User user() {
         return (User)SecurityContextHolder

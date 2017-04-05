@@ -81,17 +81,19 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         String authToken = getToken( request );
-        // get username from token
-        String username = tokenHelper.getUsernameFromToken( authToken );
-        if ( username != null ) {
-            // get user
-            UserDetails userDetails = userDetailsService.loadUserByUsername( username );
-            // create authentication
-            TokenBasedAuthentication authentication = new TokenBasedAuthentication( userDetails );
-
-            authentication.setToken( authToken );
-            authentication.setAuthenticated( true );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (authToken != null) {
+            // get username from token
+            String username = tokenHelper.getUsernameFromToken( authToken );
+            if ( username != null ) {
+                // get user
+                UserDetails userDetails = userDetailsService.loadUserByUsername( username );
+                // create authentication
+                TokenBasedAuthentication authentication = new TokenBasedAuthentication( userDetails );
+                authentication.setToken( authToken );
+                SecurityContextHolder.getContext().setAuthentication( authentication );
+            }
+        } else {
+            SecurityContextHolder.getContext().setAuthentication( new AnonAuthentication() );
         }
 
         chain.doFilter(request, response);

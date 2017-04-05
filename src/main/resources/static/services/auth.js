@@ -5,7 +5,8 @@ angular.module('myApp.services', [ 'ngCookies' ])
       return !!$cookies.get('c_user');
     },
     getUser: function() {
-      return $http.get('user')
+      return $http.get('whoami')
     }
   };
 });
+
