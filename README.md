@@ -13,7 +13,7 @@
 
 ### [Live Demo](http://fanjin.computer:8080)
 <p align="center">
-    <img width="800" alt="Springboot JWT Starter" src="https://github.com/bfwg/storehouse/blob/master/springboot-jwt-starter.png?raw=true">
+    <img width="800" alt="Springboot JWT Starter" src="https://cloud.githubusercontent.com/assets/12819525/24693784/23c8af14-1994-11e7-9984-ebf612f740ec.png">
 </p>
 
 > Token authentication is a more modern approach and is designed solve problems session IDs stored server-side can’t. Using tokens in place of session IDs can lower your server load, streamline permission management, and provide better tools for supporting a distributed or cloud-based infrastructure.
@@ -64,7 +64,7 @@ springboot-jwt-starter/
  |   │   │   │   ├──auth
  |   │   │   │   │   ├──AuthenticationFailureHandler.java       * login fail handler, configrued in WebSecurityConfig
  |   │   │   │   │   ├──AuthenticationSuccessHandler.java       * login success handler, configrued in WebSecurityConfig
- |   │   │   │   │   ├──JwtLogoutHandler.java                   * logout handler, configrued in WebSecurityConfig
+ |   │   │   │   │   ├──AnonAuthentication.java                 * It creates Anonymous user authentication object. If the user doesn't have a token, we mark the user as an anonymous visitor.
  |   │   │   │   │   ├──RestAuthenticationEntryPoint.java       * handle auth exceptions, like invalid token etc.
  |   │   │   │   │   ├──TokenAuthenticationFilter.java          * the JWT token filter, configured in WebSecurityConfig
  |   │   │   │   │   └──TokenBasedAuthentication.java           * this is our custom Authentication class and it extends AbstractAuthenticationToken.
