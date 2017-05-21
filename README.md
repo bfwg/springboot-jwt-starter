@@ -11,7 +11,11 @@
 
 > A Springboot token-based security starter kit featuring [AngularJS](https://angularjs.org/) and [Springboot](https://projects.spring.io/spring-boot/) ([JSON Web Token](https://jwt.io/))
 
-> If you're looking for using Angular 2 for frontend implementation, please checkout [angular-spring-starter](https://github.com/bfwg/angular-spring-starter)
+> If you're looking for using Angular 4 for frontend implementation, please checkout [angular-spring-starter](https://github.com/bfwg/angular-spring-starter), a fullstack starter kit featuring [Angular 4](https://angular.io), [Router](https://angular.io/docs/ts/latest/guide/router.html), [Forms](https://angular.io/docs/ts/latest/guide/forms.html),
+[Http](https://angular.io/docs/ts/latest/guide/server-communication.html),
+[Services](https://gist.github.com/gdi2290/634101fec1671ee12b3e#_follow_@AngularClass_on_twitter),
+[Spring boot](https://projects.spring.io/spring-boot/),
+[Json Web Token](https://jwt.io/)
 
 ### [Live Demo](http://fanjin.computer:8080)
 <p align="center">
