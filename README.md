@@ -17,7 +17,7 @@
 [Spring boot](https://projects.spring.io/spring-boot/),
 [Json Web Token](https://jwt.io/)
 
-### [Live Demo](http://fanjin.computer:8080)
+### [Live Demo](http://jwt.fanjin.computer)
 <p align="center">
     <img width="800" alt="Springboot JWT Starter" src="https://cloud.githubusercontent.com/assets/12819525/24693784/23c8af14-1994-11e7-9984-ebf612f740ec.png">
 </p>
