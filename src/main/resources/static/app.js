@@ -10,18 +10,16 @@ angular.module('myApp', [
 config(['$locationProvider', '$routeProvider', "$httpProvider", function($locationProvider, $routeProvider, $httpProvider) {
 
 	$httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
-
   $routeProvider.otherwise({redirectTo: '/'});
 }])
-.controller('NavigationCtrl', ['$scope', '$rootScope', '$http', '$location', 'AuthService',
-  function($scope, $rootScope, $http, $location, authService) {
-
+.controller('NavigationCtrl', ['$scope', '$rootScope', '$http', '$location',
+  function($scope, $rootScope, $http, $location) {
   var self = this
-  $rootScope.authenticated = authService.isAuthenticated();
+
   $rootScope.selectedTab = $location.path() || '/';
 
   $scope.logout = function() {
-    $http.post('logout', {}).finally(function() {
+    $http.post('auth/logout', {}).finally(function() {
       $rootScope.authenticated = false;
       $location.path("#/");
       $rootScope.selectedTab = "/";

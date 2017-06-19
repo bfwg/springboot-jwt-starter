@@ -2,6 +2,7 @@ package com.bfwg.config;
 
 import com.bfwg.security.auth.AuthenticationFailureHandler;
 import com.bfwg.security.auth.AuthenticationSuccessHandler;
+import com.bfwg.security.auth.LogoutSuccess;
 import com.bfwg.security.auth.RestAuthenticationEntryPoint;
 import com.bfwg.security.auth.TokenAuthenticationFilter;
 import com.bfwg.service.impl.CustomUserDetailsService;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * Created by fan.jin on 2016-10-19.
@@ -28,19 +30,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${jwt.cookie}")
     private String TOKEN_COOKIE;
 
-    @Value("${app.user_cookie}")
-    private String USER_COOKIE;
-
     @Bean
     public TokenAuthenticationFilter jwtAuthenticationTokenFilter() throws Exception {
         return new TokenAuthenticationFilter();
     }
 
     @Autowired
-    CustomUserDetailsService jwtUserDetailsService;
+    private CustomUserDetailsService jwtUserDetailsService;
 
     @Autowired
-    RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
+    @Autowired
+    private LogoutSuccess logoutSuccess;
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -53,24 +55,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthenticationFailureHandler authenticationFailureHandler;
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf()
+                .ignoringAntMatchers("/auth/login")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
                 .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
                 .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint ).and()
                 .addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
                 .authorizeRequests()
                 .anyRequest()
-                    .authenticated().and()
+                .authenticated().and()
                 .formLogin()
-                    .successHandler(authenticationSuccessHandler)
-                    .failureHandler(authenticationFailureHandler).and()
+                .loginPage("/auth/login")
+                .successHandler(authenticationSuccessHandler)
+                .failureHandler(authenticationFailureHandler).and()
                 .logout()
-                .deleteCookies(TOKEN_COOKIE, USER_COOKIE)
-                .logoutSuccessUrl("/login");
+                .logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout"))
+                .logoutSuccessHandler(logoutSuccess)
+                .deleteCookies(TOKEN_COOKIE);
+
     }
 
 }

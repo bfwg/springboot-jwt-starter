@@ -9,7 +9,7 @@ angular.module('myApp.login', ['ngRoute'])
 
 .controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', '$httpParamSerializerJQLike',
   function($scope, $rootScope, $http, $location, $httpParamSerializerJQLike) {
-  var self = this
+  $scope.error = false;
   $rootScope.selectedTab = $location.path() || '/';
 
   $scope.credentials = {};
@@ -27,13 +27,14 @@ angular.module('myApp.login', ['ngRoute'])
       $rootScope.authenticated = true;
       $location.path("#/");
       $rootScope.selectedTab = "/";
-      self.error = false;
+      $scope.error = false;
     })
     .catch(function() {
+      console.log('abc');
       $rootScope.authenticated = false;
       $location.path("/login");
       $rootScope.selectedTab = "/login";
-      self.error = true;
+      $scope.error = true;
     });
   };
 }]);

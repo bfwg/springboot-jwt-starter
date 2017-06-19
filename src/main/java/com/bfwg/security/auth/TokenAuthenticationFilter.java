@@ -4,18 +4,26 @@ import com.bfwg.security.TokenHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by fan.jin on 2016-10-19.
@@ -24,11 +32,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final Log logger = LogFactory.getLog(this.getClass());
 
-    @Value("${jwt.header}")
-    private String AUTH_HEADER;
 
-    @Value("${jwt.cookie}")
-    private String AUTH_COOKIE;
+    @Autowired
+    private AuthenticationEntryPoint authenticationEntryPoint;
 
     @Autowired
     TokenHelper tokenHelper;
@@ -36,67 +42,66 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     UserDetailsService userDetailsService;
 
-    private String getToken( HttpServletRequest request ) {
-        /**
-         *  Getting the token from Cookie store
-         */
-        Cookie authCookie = getCookieValueByName( request, AUTH_COOKIE );
-        if ( authCookie != null ) {
-            return authCookie.getValue();
-        }
-        /**
-         *  Getting the token from Authentication header
-         *  e.g Bearer your_token
-         */
-        String authHeader = request.getHeader(AUTH_HEADER);
-        if ( authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7);
-        }
-
-        return null;
-    }
-
-    /**
-     * Find a specific HTTP cookie in a request.
-     *
-     * @param request
-     *            The HTTP request object.
-     * @param name
-     *            The cookie name to look for.
-     * @return The cookie, or <code>null</code> if not found.
+    /*
+     * The below paths will get ignored by the filter
      */
-    protected Cookie getCookieValueByName(HttpServletRequest request, String name) {
-        if (request.getCookies() == null) {
-            return null;
-        }
-        for (int i = 0; i < request.getCookies().length; i++) {
-            if (request.getCookies()[i].getName().equals(name)) {
-                return request.getCookies()[i];
-            }
-        }
-        return null;
-    }
+    public static final String ROOT_MATCHER = "/";
+    public static final String FAVICON_MATCHER = "/favicon.ico";
+    public static final String HTML_MATCHER = "/**/*.html";
+    public static final String CSS_MATCHER = "/**/*.css";
+    public static final String JS_MATCHER = "/**/*.js";
+    public static final String IMG_MATCHER = "/images/*";
+    public static final String LOGIN_MATCHER = "/auth/login";
+    public static final String LOGOUT_MATCHER = "/auth/logout";
+
+    private List<String> pathsToSkip = Arrays.asList(
+            ROOT_MATCHER,
+            HTML_MATCHER,
+            FAVICON_MATCHER,
+            CSS_MATCHER,
+            JS_MATCHER,
+            IMG_MATCHER,
+            LOGIN_MATCHER,
+            LOGOUT_MATCHER
+    );
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-        String authToken = getToken( request );
-        if (authToken != null) {
+
+        String authToken = tokenHelper.getToken(request);
+        if (authToken != null && !skipPathRequest(request, pathsToSkip)) {
             // get username from token
-            String username = tokenHelper.getUsernameFromToken( authToken );
-            if ( username != null ) {
+            try {
+                String username = tokenHelper.getUsernameFromToken(authToken);
                 // get user
-                UserDetails userDetails = userDetailsService.loadUserByUsername( username );
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 // create authentication
-                TokenBasedAuthentication authentication = new TokenBasedAuthentication( userDetails );
-                authentication.setToken( authToken );
-                SecurityContextHolder.getContext().setAuthentication( authentication );
+                TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
+                authentication.setToken(authToken);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (Exception e) {
+                AuthenticationException authEx;
+                if ( e instanceof AuthenticationException ) {
+                    authEx = (AuthenticationException) e;
+                } else {
+                    authEx = new InsufficientAuthenticationException( e.getMessage(), e );
+                }
+                authenticationEntryPoint.commence( request, response, authEx );
+                return;
             }
         } else {
-            SecurityContextHolder.getContext().setAuthentication( new AnonAuthentication() );
+            SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
         }
 
         chain.doFilter(request, response);
+    }
+
+    private boolean skipPathRequest(HttpServletRequest request, List<String> pathsToSkip ) {
+        Assert.notNull(pathsToSkip);
+        List<RequestMatcher> m = pathsToSkip.stream().map(path -> new AntPathRequestMatcher(path)).collect(Collectors.toList());
+        OrRequestMatcher matchers = new OrRequestMatcher(m);
+        return matchers.matches(request);
     }
 
 }
