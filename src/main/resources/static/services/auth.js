@@ -1,12 +1,9 @@
-angular.module('myApp.services', [ 'ngCookies' ])
-.factory('AuthService', function($http, $cookies) {
+angular.module('myApp.services', [])
+.factory('AuthService', function($http) {
+	var user = null;
   return {
-    isAuthenticated: function() {
-      return !!$cookies.get('c_user');
-    },
     getUser: function() {
-      return $http.get('whoami')
-    }
+			return $http.get('/whoami');
+		}
   };
 });
-

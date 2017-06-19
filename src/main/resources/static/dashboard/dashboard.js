@@ -1,56 +1,71 @@
 'use strict';
 
 angular.module('myApp.dashboard', ['ngRoute'])
-
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/', {
     templateUrl: 'dashboard/dashboard.html',
-    controller: 'DashboardCtrl'
+    controller: DashboardCtrl,
+		resolve: DashboardCtrl.resolve
   });
-}])
+}]);
 
-.controller('DashboardCtrl', ['$scope', '$rootScope', '$http', 'AuthService',
-  function($scope, $rootScope, $http, authService) {
-    $scope.serverResponse = '';
-    $scope.responseBoxClass = '';
+function DashboardCtrl($scope, $rootScope, $http, authService, isAuthenticated) {
+	$rootScope.authenticated = isAuthenticated;
 
-    var setResponse = function(res, success) {
-      // sync auth state
-			$rootScope.authenticated = authService.isAuthenticated();
-      if (success) {
-        $scope.responseBoxClass = 'alert-success';
-      } else {
-        $scope.responseBoxClass = 'alert-danger';
-      }
-      $scope.serverResponse = res;
-      $scope.serverResponse.data = JSON.stringify(res.data, null, 2);
-    }
+	$scope.serverResponse = '';
+	$scope.responseBoxClass = '';
 
-    if ($rootScope.authenticated) {
-      authService.getUser()
-      .then(function(response) {
-        $scope.user = response.data;
-      });
-    }
+	var setResponse = function(res, success) {
+		$rootScope.authenticated = isAuthenticated;
+		if (success) {
+			$scope.responseBoxClass = 'alert-success';
+		} else {
+			$scope.responseBoxClass = 'alert-danger';
+		}
+		$scope.serverResponse = res;
+		$scope.serverResponse.data = JSON.stringify(res.data, null, 2);
+	}
 
-    $scope.getUserInfo = function() {
-      authService.getUser()
-      .then(function(response) {
-        setResponse(response, true);
-      })
-      .catch(function(response) {
-        setResponse(response, false);
-      });
-    }
+	if ($rootScope.authenticated) {
+		authService.getUser()
+		.then(function(response) {
+			$scope.user = response.data;
+		});
+	}
 
-    $scope.getAllUserInfo = function() {
-      $http.get('user/all')
-      .then(function(response) {
-        setResponse(response, true);
-      })
-      .catch(function(response) {
-        setResponse(response, false);
-      });
-    }
+	$scope.getUserInfo = function() {
+		authService.getUser()
+		.then(function(response) {
+			setResponse(response, true);
+		})
+		.catch(function(response) {
+			setResponse(response, false);
+		});
+	}
 
-  }]);
+	$scope.getAllUserInfo = function() {
+		$http.get('user/all')
+		.then(function(response) {
+			setResponse(response, true);
+		})
+		.catch(function(response) {
+			setResponse(response, false);
+		});
+	}
+}
+DashboardCtrl.resolve = {
+	isAuthenticated : function($q, $http) {
+		var deferred = $q.defer();
+		$http({method: 'GET', url: 'auth/refresh'})
+		.success(function(data) {
+			deferred.resolve(data.access_token !== null);
+		})
+		.error(function(data){
+			deferred.resolve(false); // you could optionally pass error data here
+		});
+		return deferred.promise;
+	}
+};
+
+DashboardCtrl.$inject = ['$scope', '$rootScope', '$http', 'AuthService', 'isAuthenticated'];
+

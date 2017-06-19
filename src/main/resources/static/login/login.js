@@ -9,14 +9,14 @@ angular.module('myApp.login', ['ngRoute'])
 
 .controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', '$httpParamSerializerJQLike',
   function($scope, $rootScope, $http, $location, $httpParamSerializerJQLike) {
-  var self = this
+  $scope.error = false;
   $rootScope.selectedTab = $location.path() || '/';
 
   $scope.credentials = {};
   $scope.login = function() {
     // We are using formLogin in our backend, so here we need to serialize our form data
     $http({
-      url: 'login',
+      url: 'auth/login',
       method: 'POST',
       data: $httpParamSerializerJQLike($scope.credentials),
       headers: {
@@ -27,13 +27,13 @@ angular.module('myApp.login', ['ngRoute'])
       $rootScope.authenticated = true;
       $location.path("#/");
       $rootScope.selectedTab = "/";
-      self.error = false;
+      $scope.error = false;
     })
     .catch(function() {
       $rootScope.authenticated = false;
       $location.path("/login");
       $rootScope.selectedTab = "/login";
-      self.error = true;
+      $scope.error = true;
     });
   };
 }]);
