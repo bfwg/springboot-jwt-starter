@@ -86,14 +86,14 @@ public class TokenHelper {
     }
 
     public Boolean canTokenBeRefreshed(String token) {
-        final Date expirationDate = getClaimsFromToken(token).getExpiration();
-        String username = getUsernameFromToken(token);
         try {
+            final Date expirationDate = getClaimsFromToken(token).getExpiration();
+            String username = getUsernameFromToken(token);
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            return expirationDate.compareTo(generateCurrentDate()) > 0;
         } catch (Exception e) {
             return false;
         }
-        return expirationDate.compareTo(generateCurrentDate()) > 0;
     }
 
     public String refreshToken(String token) {

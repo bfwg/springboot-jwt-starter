@@ -16,7 +16,7 @@ angular.module('myApp.login', ['ngRoute'])
   $scope.login = function() {
     // We are using formLogin in our backend, so here we need to serialize our form data
     $http({
-      url: 'login',
+      url: 'auth/login',
       method: 'POST',
       data: $httpParamSerializerJQLike($scope.credentials),
       headers: {
@@ -30,7 +30,6 @@ angular.module('myApp.login', ['ngRoute'])
       $scope.error = false;
     })
     .catch(function() {
-      console.log('abc');
       $rootScope.authenticated = false;
       $location.path("/login");
       $rootScope.selectedTab = "/login";

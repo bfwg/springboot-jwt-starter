@@ -4,12 +4,9 @@ import com.bfwg.security.TokenHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -31,10 +28,6 @@ import java.util.stream.Collectors;
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final Log logger = LogFactory.getLog(this.getClass());
-
-
-    @Autowired
-    private AuthenticationEntryPoint authenticationEntryPoint;
 
     @Autowired
     TokenHelper tokenHelper;
@@ -81,14 +74,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                 authentication.setToken(authToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
-                AuthenticationException authEx;
-                if ( e instanceof AuthenticationException ) {
-                    authEx = (AuthenticationException) e;
-                } else {
-                    authEx = new InsufficientAuthenticationException( e.getMessage(), e );
-                }
-                authenticationEntryPoint.commence( request, response, authEx );
-                return;
+                SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
             }
         } else {
             SecurityContextHolder.getContext().setAuthentication(new AnonAuthentication());
