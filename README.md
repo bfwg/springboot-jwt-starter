@@ -56,38 +56,41 @@ mvn spring-boot:run
 ```
 springboot-jwt-starter/
  ├──src/                                                        * our source files
- |   ├──main
+ │   ├──main
  │   │   ├──java.com.bfwg
- |   │   │   ├──config
- |   │   │   │   └──WebSecurityConfig.java                      * config file for filter, custom userSerivce etc.
- |   │   │   ├──model
- |   │   │   │   ├──Authority.java
- |   │   │   │   ├──CustomUserDetail.java                       * custom UserDetail implemtation
- |   │   │   │   └──User.java                                   * our main user model.
- |   │   │   ├──repository                                      * repositories folder for accessing database
- |   │   │   │   └──UserRepository.java
- |   │   │   ├──rest                                            * rest endpoint folder
- |   │   │   │   └──UserController.java                         * REST controller to handle User related requests
- |   │   │   ├──security                                        * Security related folder(JWT, filters)
- |   │   │   │   ├──auth
- |   │   │   │   │   ├──AuthenticationFailureHandler.java       * login fail handler, configrued in WebSecurityConfig
- |   │   │   │   │   ├──AuthenticationSuccessHandler.java       * login success handler, configrued in WebSecurityConfig
- |   │   │   │   │   ├──AnonAuthentication.java                 * It creates Anonymous user authentication object. If the user doesn't have a token, we mark the user as an anonymous visitor.
- |   │   │   │   │   ├──RestAuthenticationEntryPoint.java       * handle auth exceptions, like invalid token etc.
- |   │   │   │   │   ├──TokenAuthenticationFilter.java          * the JWT token filter, configured in WebSecurityConfig
- |   │   │   │   │   └──TokenBasedAuthentication.java           * this is our custom Authentication class and it extends AbstractAuthenticationToken.
- |   │   │   │   └──TokenUtils.java                             * token helper class
- |   │   │   ├──service
- |   │   │   │   ├──impl
- |   │   │   │   │   ├──CustomUserDetailsService.java           * custom UserDatilsService implementataion, tells formLogin() where to check username/password
- |   │   │   │   │   └──UserServiceImpl.java
- |   │   │   │   └──UserService.java
- |   │   │   └──Application.java                                * Application main enterance
- |   │   └──recources
- |   │       ├──static                                          * static assets are served here(Angular and html templates)
- |   │       ├──application.yml                                 * application variables are configured here
- |   │       └──import.sql                                      * h2 database query(table creation)
- |   └──test                                                    * Junit test folder
+ │   │   │   ├──config
+ │   │   │   │   └──WebSecurityConfig.java                      * config file for filter, custom userSerivce etc.
+ │   │   │   ├──model
+ │   │   │   │   ├──Authority.java
+ │   │   │   │   ├──CustomUserDetail.java                       * custom UserDetail implemtation
+ │   │   │   │   ├──UserTokenState.java                         * JWT model
+ │   │   │   │   └──User.java                                   * our main user model.
+ │   │   │   ├──repository                                      * repositories folder for accessing database
+ │   │   │   │   └──UserRepository.java
+ │   │   │   ├──rest                                            * rest endpoint folder
+ │   │   │   │   ├──AuthenticationController.java               * auth related REST controller, refresh token endpoint etc.
+ │   │   │   │   └──UserController.java                         * REST controller to handle User related requests
+ │   │   │   ├──security                                        * Security related folder(JWT, filters)
+ │   │   │   │   ├──auth
+ │   │   │   │   │   ├──AuthenticationFailureHandler.java       * login fail handler, configrued in WebSecurityConfig
+ │   │   │   │   │   ├──AuthenticationSuccessHandler.java       * login success handler, configrued in WebSecurityConfig
+ │   │   │   │   │   ├──AnonAuthentication.java                 * It creates Anonymous user authentication object. If the user doesn't have a token, we mark the user as an anonymous visitor.
+ │   │   │   │   │   ├──LogoutSuccess.java                      * controls the behavior after sign out.
+ │   │   │   │   │   ├──RestAuthenticationEntryPoint.java       * handle auth exceptions, like invalid token etc.
+ │   │   │   │   │   ├──TokenAuthenticationFilter.java          * the JWT token filter, configured in WebSecurityConfig
+ │   │   │   │   │   └──TokenBasedAuthentication.java           * this is our custom Authentication class and it extends AbstractAuthenticationToken.
+ │   │   │   │   └──TokenHelper.java                             * token helper class
+ │   │   │   ├──service
+ │   │   │   │   ├──impl
+ │   │   │   │   │   ├──CustomUserDetailsService.java           * custom UserDatilsService implementataion, tells formLogin() where to check username/password
+ │   │   │   │   │   └──UserServiceImpl.java
+ │   │   │   │   └──UserService.java
+ │   │   │   └──Application.java                                * Application main enterance
+ │   │   └──recources
+ │   │       ├──static                                          * static assets are served here(Angular and html templates)
+ │   │       ├──application.yml                                 * application variables are configured here
+ │   │       └──import.sql                                      * h2 database query(table creation)
+ │   └──test                                                    * Junit test folder
  └──pom.xml                                                     * what maven uses to manage it's dependencies
 ```
 # Table of Contents
