@@ -7,7 +7,7 @@
     |_|                 |___/                        |__/
 ```
 
-[![npm](https://img.shields.io/badge/demo-online-ed1c46.svg)](http://jwt.fanjin.computer/)
+[![npm](https://img.shields.io/badge/demo-online-ed1c46.svg)](http://jwt.fanjin.io/)
 [![Build Status](https://travis-ci.org/bfwg/springboot-jwt-starter.svg?branch=master)](https://travis-ci.org/bfwg/springboot-jwt-starter)
 [![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bfwg/springboot-jwt-starter/blob/master/LICENSE)
 
@@ -19,7 +19,7 @@
 [Spring boot](https://projects.spring.io/spring-boot/),
 [Json Web Token](https://jwt.io/)
 
-### [Live Demo](http://jwt.fanjin.computer)
+### [Live Demo](http://jwt.fanjin.io)
 <p align="center">
     <img width="800" alt="Springboot JWT Starter" src="https://cloud.githubusercontent.com/assets/12819525/24693784/23c8af14-1994-11e7-9984-ebf612f740ec.png">
 </p>
