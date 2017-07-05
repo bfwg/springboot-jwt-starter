@@ -84,7 +84,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean skipPathRequest(HttpServletRequest request, List<String> pathsToSkip ) {
-        Assert.notNull(pathsToSkip);
+        Assert.notNull(pathsToSkip, "pathsToSkip is null!");
         List<RequestMatcher> m = pathsToSkip.stream().map(path -> new AntPathRequestMatcher(path)).collect(Collectors.toList());
         OrRequestMatcher matchers = new OrRequestMatcher(m);
         return matchers.matches(request);
