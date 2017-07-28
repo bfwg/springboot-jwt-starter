@@ -1,10 +1,6 @@
 package com.bfwg.config;
 
-import com.bfwg.security.auth.AuthenticationFailureHandler;
-import com.bfwg.security.auth.AuthenticationSuccessHandler;
-import com.bfwg.security.auth.LogoutSuccess;
-import com.bfwg.security.auth.RestAuthenticationEntryPoint;
-import com.bfwg.security.auth.TokenAuthenticationFilter;
+import com.bfwg.security.auth.*;
 import com.bfwg.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +11,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -35,6 +33,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new TokenAuthenticationFilter();
     }
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Autowired
     private CustomUserDetailsService jwtUserDetailsService;
 
@@ -45,8 +48,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private LogoutSuccess logoutSuccess;
 
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(jwtUserDetailsService);
+    public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
+        auth.userDetailsService( jwtUserDetailsService )
+            .passwordEncoder( passwordEncoder() );
     }
 
     @Autowired
