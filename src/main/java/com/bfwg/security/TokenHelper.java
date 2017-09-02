@@ -59,11 +59,10 @@ public class TokenHelper {
     }
 
     public String generateToken(String username) {
-        Date d = generateCurrentDate();
         return Jwts.builder()
                 .setIssuer( APP_NAME )
                 .setSubject(username)
-                .setIssuedAt(d)
+                .setIssuedAt(generateCurrentDate())
                 .setExpiration(generateExpirationDate())
                 .signWith( SIGNATURE_ALGORITHM, SECRET )
                 .compact();
