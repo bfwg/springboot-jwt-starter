@@ -44,12 +44,15 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             } catch (IllegalArgumentException e) {
                 logger.error("an error occured during getting username from token", e);
             }
-            // get user
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            // create authentication
-            TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
-            authentication.setToken(authToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            if (username != null) {
+                // get user
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                // create authentication
+                TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
+                authentication.setToken(authToken);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
 
         chain.doFilter(request, response);
