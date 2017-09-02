@@ -31,7 +31,7 @@ angular.module('myApp.login', ['ngRoute'])
     })
     .catch(function() {
       $rootScope.authenticated = false;
-      $location.path("/login");
+      $location.path("auth/login");
       $rootScope.selectedTab = "/login";
       $scope.error = true;
     });

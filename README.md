@@ -62,9 +62,8 @@ springboot-jwt-starter/
  │   │   │   │   └──WebSecurityConfig.java                      * config file for filter, custom userSerivce etc.
  │   │   │   ├──model
  │   │   │   │   ├──Authority.java
- │   │   │   │   ├──CustomUserDetail.java                       * custom UserDetail implemtation
  │   │   │   │   ├──UserTokenState.java                         * JWT model
- │   │   │   │   └──User.java                                   * our main user model.
+ │   │   │   │   └──User.java                                   * our main User model.
  │   │   │   ├──repository                                      * repositories folder for accessing database
  │   │   │   │   └──UserRepository.java
  │   │   │   ├──rest                                            * rest endpoint folder
@@ -74,7 +73,6 @@ springboot-jwt-starter/
  │   │   │   │   ├──auth
  │   │   │   │   │   ├──AuthenticationFailureHandler.java       * login fail handler, configrued in WebSecurityConfig
  │   │   │   │   │   ├──AuthenticationSuccessHandler.java       * login success handler, configrued in WebSecurityConfig
- │   │   │   │   │   ├──AnonAuthentication.java                 * It creates Anonymous user authentication object. If the user doesn't have a token, we mark the user as an anonymous visitor.
  │   │   │   │   │   ├──LogoutSuccess.java                      * controls the behavior after sign out.
  │   │   │   │   │   ├──RestAuthenticationEntryPoint.java       * handle auth exceptions, like invalid token etc.
  │   │   │   │   │   ├──TokenAuthenticationFilter.java          * the JWT token filter, configured in WebSecurityConfig

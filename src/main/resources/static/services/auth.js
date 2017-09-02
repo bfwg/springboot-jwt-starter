@@ -3,7 +3,7 @@ angular.module('myApp.services', [])
 	var user = null;
   return {
     getUser: function() {
-			return $http.get('/whoami');
+			return $http.get('api/whoami');
 		}
   };
 });
