@@ -6,7 +6,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +13,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Map;
+import java.util.function.Function;
 
 
 /**
@@ -30,7 +30,7 @@ public class TokenHelper {
     private String SECRET;
 
     @Value("${jwt.expires_in}")
-    private int EXPIRES_IN;
+    private long EXPIRES_IN;
 
     @Value("${jwt.header}")
     private String AUTH_HEADER;
@@ -44,37 +44,42 @@ public class TokenHelper {
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
 
     public String getUsernameFromToken(String token) {
-        String username;
-        try {
-            final Claims claims = this.getClaimsFromToken(token);
-            username = claims.getSubject();
-        } catch (Exception e) {
-            username = null;
-        }
-        return username;
+        return getClaimsFromToken(token, Claims::getSubject);
+    }
+
+    public Boolean canTokenBeRefreshed(String token) {
+        final Date expirationDate = getClaimsFromToken(token, Claims::getExpiration);
+        return expirationDate.compareTo(generateCurrentDate()) > 0;
+    }
+
+    public String refreshToken(String token) {
+        final Claims claims = getAllClaimsFromToken(token);
+        claims.setIssuedAt(generateCurrentDate());
+        return generateToken(claims);
     }
 
     public String generateToken(String username) {
+        Date d = generateCurrentDate();
         return Jwts.builder()
                 .setIssuer( APP_NAME )
                 .setSubject(username)
-                .setIssuedAt(generateCurrentDate())
+                .setIssuedAt(d)
                 .setExpiration(generateExpirationDate())
                 .signWith( SIGNATURE_ALGORITHM, SECRET )
                 .compact();
     }
 
-    private Claims getClaimsFromToken(String token) {
-        Claims claims;
-        try {
-            claims = Jwts.parser()
-                    .setSigningKey(this.SECRET)
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (Exception e) {
-            claims = null;
-        }
-        return claims;
+
+    private <T> T getClaimsFromToken(String token, Function<Claims, T> claimsResolver) {
+        Claims claims = getAllClaimsFromToken(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(SECRET)
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     String generateToken(Map<String, Object> claims) {
@@ -83,29 +88,6 @@ public class TokenHelper {
                 .setExpiration(generateExpirationDate())
                 .signWith( SIGNATURE_ALGORITHM, SECRET )
                 .compact();
-    }
-
-    public Boolean canTokenBeRefreshed(String token) {
-        try {
-            final Date expirationDate = getClaimsFromToken(token).getExpiration();
-            String username = getUsernameFromToken(token);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            return expirationDate.compareTo(generateCurrentDate()) > 0;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public String refreshToken(String token) {
-        String refreshedToken;
-        try {
-            final Claims claims = getClaimsFromToken(token);
-            claims.setIssuedAt(generateCurrentDate());
-            refreshedToken = generateToken(claims);
-        } catch (Exception e) {
-            refreshedToken = null;
-        }
-        return refreshedToken;
     }
 
     private long getCurrentTimeMillis() {

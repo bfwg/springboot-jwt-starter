@@ -6,12 +6,12 @@
 	</p>
 </div>
 <div  ng-show="!authenticated">
-	<p>You are an anonymous user.</p>
+	<p>Hi there, guest.</p>
 </div>
 <p>Click the links below and see the result.</p>
 <div style="margin-bottom: 10px;">
-    <button type="button" class="btn btn-info" ng-click="getUserInfo()">/whoami</button>
-    <button type="button" class="btn btn-info" ng-click="getAllUserInfo()">/user/all</button>
+    <button type="button" class="btn btn-info" ng-click="getUserInfo()">/api/whoami</button>
+    <button type="button" class="btn btn-info" ng-click="getAllUserInfo()">/api/user/all</button>
 </div>
 <div class="alert {{responseBoxClass}}" ng-show="serverResponse">
     <b>Server Response:</b>

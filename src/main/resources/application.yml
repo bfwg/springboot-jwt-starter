@@ -1,6 +1,5 @@
 app:
   name: springboot-jwt-demo
-  user_cookie: c_user
 
 jwt:
   header: Authorization

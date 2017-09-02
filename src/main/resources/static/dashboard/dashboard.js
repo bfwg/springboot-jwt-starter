@@ -44,7 +44,7 @@ function DashboardCtrl($scope, $rootScope, $http, authService, isAuthenticated) 
 	}
 
 	$scope.getAllUserInfo = function() {
-		$http.get('user/all')
+		$http.get('api/user/all')
 		.then(function(response) {
 			setResponse(response, true);
 		})

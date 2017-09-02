@@ -3,15 +3,8 @@ package com.bfwg.security.auth;
 /**
  * Created by fan.jin on 2016-11-07.
  */
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.bfwg.model.UserTokenState;
 import com.bfwg.model.User;
+import com.bfwg.model.UserTokenState;
 import com.bfwg.security.TokenHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +12,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Component
 public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -28,9 +27,6 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 
     @Value("${jwt.cookie}")
     private String TOKEN_COOKIE;
-
-	@Value("${app.user_cookie}")
-	private String USER_COOKIE;
 
 	@Autowired
 	TokenHelper tokenHelper;
@@ -51,13 +47,8 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 		authCookie.setPath( "/" );
 		authCookie.setHttpOnly( true );
 		authCookie.setMaxAge( EXPIRES_IN );
-		// Create flag Cookie
-		Cookie userCookie = new Cookie( USER_COOKIE, ( user.getFirstname() ) );
-		userCookie.setPath( "/" );
-		userCookie.setMaxAge( EXPIRES_IN );
 		// Add cookie to response
 		response.addCookie( authCookie );
-		response.addCookie( userCookie );
 		// JWT is also in the response
 		UserTokenState userTokenState = new UserTokenState(jws, EXPIRES_IN);
 		String jwtResponse = objectMapper.writeValueAsString( userTokenState );
