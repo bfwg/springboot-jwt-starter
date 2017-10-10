@@ -1,19 +1,18 @@
 package com.bfwg.security;
 
+import com.bfwg.common.TimeProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.mobile.device.Device;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.Map;
-import java.util.function.Function;
 
 
 /**
@@ -32,74 +31,133 @@ public class TokenHelper {
     @Value("${jwt.expires_in}")
     private long EXPIRES_IN;
 
+    @Value("${jwt.mobile_expires_in}")
+    private long MOBILE_EXPIRES_IN;
+
     @Value("${jwt.header}")
     private String AUTH_HEADER;
 
     @Value("${jwt.cookie}")
     private String AUTH_COOKIE;
 
+    static final String AUDIENCE_UNKNOWN = "unknown";
+    static final String AUDIENCE_WEB = "web";
+    static final String AUDIENCE_MOBILE = "mobile";
+    static final String AUDIENCE_TABLET = "tablet";
+
     @Autowired
-    UserDetailsService userDetailsService;
+    TimeProvider timeProvider;
 
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
 
     public String getUsernameFromToken(String token) {
-        return getClaimsFromToken(token, Claims::getSubject);
+        String username;
+        try {
+            final Claims claims = this.getAllClaimsFromToken(token);
+            username = claims.getSubject();
+        } catch (Exception e) {
+            username = null;
+        }
+        return username;
     }
 
-    public Boolean canTokenBeRefreshed(String token) {
-        final Date expirationDate = getClaimsFromToken(token, Claims::getExpiration);
-        return expirationDate.compareTo(generateCurrentDate()) > 0;
+    public Date getIssuedAtDateFromToken(String token) {
+        Date issueAt;
+        try {
+            final Claims claims = this.getAllClaimsFromToken(token);
+            issueAt = claims.getIssuedAt();
+        } catch (Exception e) {
+            issueAt = null;
+        }
+        return issueAt;
     }
 
-    public String refreshToken(String token) {
-        final Claims claims = getAllClaimsFromToken(token);
-        claims.setIssuedAt(generateCurrentDate());
-        return generateToken(claims);
+    public String getAudienceFromToken(String token) {
+        String audience;
+        try {
+            final Claims claims = this.getAllClaimsFromToken(token);
+            audience = claims.getAudience();
+        } catch (Exception e) {
+            audience = null;
+        }
+        return audience;
     }
 
-    public String generateToken(String username) {
+    public String refreshToken(String token, Device device) {
+        String refreshedToken;
+        try {
+            final Claims claims = this.getAllClaimsFromToken(token);
+            claims.setIssuedAt(timeProvider.now());
+            refreshedToken = Jwts.builder()
+                .setClaims(claims)
+                .setExpiration(generateExpirationDate(device))
+                .signWith( SIGNATURE_ALGORITHM, SECRET )
+                .compact();
+        } catch (Exception e) {
+            refreshedToken = null;
+        }
+        return refreshedToken;
+    }
+
+    public String generateToken(String username, Device device) {
+        String audience = generateAudience(device);
         return Jwts.builder()
                 .setIssuer( APP_NAME )
                 .setSubject(username)
-                .setIssuedAt(generateCurrentDate())
-                .setExpiration(generateExpirationDate())
+                .setAudience(audience)
+                .setIssuedAt(timeProvider.now())
+                .setExpiration(generateExpirationDate(device))
                 .signWith( SIGNATURE_ALGORITHM, SECRET )
                 .compact();
     }
 
-
-    private <T> T getClaimsFromToken(String token, Function<Claims, T> claimsResolver) {
-        Claims claims = getAllClaimsFromToken(token);
-        return claimsResolver.apply(claims);
+    private String generateAudience(Device device) {
+        String audience = AUDIENCE_UNKNOWN;
+        if (device.isNormal()) {
+            audience = AUDIENCE_WEB;
+        } else if (device.isTablet()) {
+            audience = AUDIENCE_TABLET;
+        } else if (device.isMobile()) {
+            audience = AUDIENCE_MOBILE;
+        }
+        return audience;
     }
 
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET)
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims;
+        try {
+            claims = Jwts.parser()
+                    .setSigningKey(SECRET)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            claims = null;
+        }
+        return claims;
     }
 
-    String generateToken(Map<String, Object> claims) {
-        return Jwts.builder()
-                .setClaims(claims)
-                .setExpiration(generateExpirationDate())
-                .signWith( SIGNATURE_ALGORITHM, SECRET )
-                .compact();
+    private Date generateExpirationDate(Device device) {
+        long expiresIn = device.isTablet() || device.isMobile() ? MOBILE_EXPIRES_IN : EXPIRES_IN;
+        return new Date(timeProvider.now().getTime() + expiresIn * 1000);
     }
 
-    private long getCurrentTimeMillis() {
-        return DateTime.now().getMillis();
+    public Boolean canTokenBeRefreshed(String token) {
+        final Date created = getIssuedAtDateFromToken(token);
+        if (created == null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
-    private Date generateCurrentDate() {
-        return new Date(getCurrentTimeMillis());
-    }
-
-    private Date generateExpirationDate() {
-
-        return new Date(getCurrentTimeMillis() + this.EXPIRES_IN * 1000);
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        final String username = getUsernameFromToken(token);
+//        final Date created = getIssuedAtDateFromToken(token);
+        return (
+                username != null &&
+                username.equals(userDetails.getUsername())
+//                        && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate())
+        );
     }
 
     public String getToken( HttpServletRequest request ) {

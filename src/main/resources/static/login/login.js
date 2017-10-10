@@ -7,8 +7,8 @@ angular.module('myApp.login', ['ngRoute'])
   });
 }])
 
-.controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', '$httpParamSerializerJQLike',
-  function($scope, $rootScope, $http, $location, $httpParamSerializerJQLike) {
+.controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location',
+  function($scope, $rootScope, $http, $location) {
   $scope.error = false;
   $rootScope.selectedTab = $location.path() || '/';
 
@@ -18,9 +18,9 @@ angular.module('myApp.login', ['ngRoute'])
     $http({
       url: 'auth/login',
       method: 'POST',
-      data: $httpParamSerializerJQLike($scope.credentials),
+      data: $scope.credentials,
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/json'
       }
     })
     .then(function(res) {
@@ -31,8 +31,6 @@ angular.module('myApp.login', ['ngRoute'])
     })
     .catch(function() {
       $rootScope.authenticated = false;
-      $location.path("auth/login");
-      $rootScope.selectedTab = "/login";
       $scope.error = true;
     });
   };

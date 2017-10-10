@@ -32,26 +32,27 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 
     @Override
-    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain
+    ) throws IOException, ServletException {
 
-
-        String username = null;
+        String username;
         String authToken = tokenHelper.getToken(request);
+
         if (authToken != null) {
             // get username from token
-            try {
-                username = tokenHelper.getUsernameFromToken(authToken);
-            } catch (IllegalArgumentException e) {
-                logger.error("an error occured during getting username from token", e);
-            }
-
+            username = tokenHelper.getUsernameFromToken(authToken);
             if (username != null) {
                 // get user
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                // create authentication
-                TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
-                authentication.setToken(authToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                if (tokenHelper.validateToken(authToken, userDetails)) {
+                    // create authentication
+                    TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);
+                    authentication.setToken(authToken);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
         }
 
