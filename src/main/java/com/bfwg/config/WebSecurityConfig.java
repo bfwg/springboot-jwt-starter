@@ -54,13 +54,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    private AuthenticationSuccessHandler authenticationSuccessHandler;
-
-    @Autowired
-    private AuthenticationFailureHandler authenticationFailureHandler;
-
-
-    @Autowired
     TokenHelper tokenHelper;
 
     @Override
@@ -72,6 +65,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(
                         HttpMethod.GET,
                         "/",
+                        "/auth/**",
+                        "/webjars/**",
                         "/*.html",
                         "/favicon.ico",
                         "/**/*.html",
@@ -81,10 +76,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated().and()
                 .addFilterBefore(new TokenAuthenticationFilter(tokenHelper, userDetailsService), BasicAuthenticationFilter.class)
-                .formLogin()
-                .loginPage("/auth/login")
-                .successHandler(authenticationSuccessHandler)
-                .failureHandler(authenticationFailureHandler).and()
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout"))
                 .logoutSuccessHandler(logoutSuccess)
@@ -104,6 +95,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers(
                 HttpMethod.GET,
                 "/",
+                "/auth/**",
+                "/webjars/**",
                 "/*.html",
                 "/favicon.ico",
                 "/**/*.html",

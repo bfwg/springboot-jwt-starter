@@ -71,8 +71,7 @@ springboot-jwt-starter/
  │   │   │   │   └──UserController.java                         * REST controller to handle User related requests
  │   │   │   ├──security                                        * Security related folder(JWT, filters)
  │   │   │   │   ├──auth
- │   │   │   │   │   ├──AuthenticationFailureHandler.java       * login fail handler, configrued in WebSecurityConfig
- │   │   │   │   │   ├──AuthenticationSuccessHandler.java       * login success handler, configrued in WebSecurityConfig
+ │   │   │   │   │   ├──JwtAuthenticationRequest.java           * login request object, contains username and password
  │   │   │   │   │   ├──LogoutSuccess.java                      * controls the behavior after sign out.
  │   │   │   │   │   ├──RestAuthenticationEntryPoint.java       * handle auth exceptions, like invalid token etc.
  │   │   │   │   │   ├──TokenAuthenticationFilter.java          * the JWT token filter, configured in WebSecurityConfig
