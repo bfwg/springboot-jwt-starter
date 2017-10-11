@@ -5,15 +5,16 @@ import com.bfwg.model.Authority;
 import com.bfwg.model.User;
 import com.bfwg.security.DeviceDummy;
 import com.bfwg.security.TokenHelper;
-import com.bfwg.security.UserDetailsDummy;
 import org.assertj.core.util.DateUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mobile.device.Device;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -23,6 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.mockito.Matchers.eq;
@@ -30,7 +32,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Created by fanjin on 2017-09-01.
@@ -46,7 +47,7 @@ public class AuthenticationControllerTest {
 
     private static final String TEST_USERNAME = "testUser";
 
-    @Autowired
+    @InjectMocks
     private TokenHelper tokenHelper;
 
     @MockBean
@@ -54,6 +55,9 @@ public class AuthenticationControllerTest {
 
     @Autowired
     private WebApplicationContext context;
+
+    @InjectMocks
+    DeviceDummy device;
 
     @Before
     public void setup() {
@@ -72,33 +76,44 @@ public class AuthenticationControllerTest {
         when(this.userDetailsService.loadUserByUsername(eq("testUser"))).thenReturn(user);
 
         ReflectionTestUtils.setField(tokenHelper, "EXPIRES_IN", 10L); // 10 sec
+        ReflectionTestUtils.setField(tokenHelper, "MOBILE_EXPIRES_IN", 20L); // 20 sec
         ReflectionTestUtils.setField(tokenHelper, "SECRET", "mySecret");
     }
-
 
     @Test
     @WithMockUser(roles = "USER")
     public void shouldGetEmptyTokenStateWhenGivenValidOldToken() throws Exception {
         when(timeProviderMock.now())
                 .thenReturn(DateUtil.yesterday());
-//        String token = createToken();
         this.mvc.perform(get("/auth/refresh"))
                 .andExpect(content().json("{access_token:null,expires_in:null}"));
     }
 
     @Test
-    public void shouldNotGet200WhenGivenInvalidOldToken() throws Exception {
+    @WithMockUser(roles = "USER")
+    public void shouldNotRefreshExpiredWebToken() throws Exception {
+        Date beforeSomeTime = new Date(DateUtil.now().getTime() - 15 * 1000);
         when(timeProviderMock.now())
-                .thenReturn(DateUtil.yesterday())
-                .thenReturn(DateUtil.now());
-        String token = createToken();
+                .thenReturn(beforeSomeTime);
+        device.setNormal(true);
+        String token = createToken(device);
         this.mvc.perform(get("/auth/refresh").header("Authorization", "Bearer " + token))
-            .andExpect(status().is(200));
+                .andExpect(content().json("{access_token:null,expires_in:null}"));
     }
 
-    private String createToken() {
-        final DeviceDummy device = new DeviceDummy();
+    @Test
+    @WithMockUser(roles = "USER")
+    public void shouldRefreshExpiredMobileToken() throws Exception {
+        Date beforeSomeTime = new Date(DateUtil.now().getTime() - 15 * 1000);
+        when(timeProviderMock.now())
+                .thenReturn(beforeSomeTime);
         device.setNormal(true);
-        return tokenHelper.generateToken(new UserDetailsDummy(TEST_USERNAME).getUsername(), device);
+        String token = createToken(device);
+        this.mvc.perform(get("/auth/refresh").header("Authorization", "Bearer " + token))
+                .andExpect(content().json("{access_token:null,expires_in:null}"));
+    }
+
+    private String createToken(Device device) {
+        return tokenHelper.generateToken(TEST_USERNAME, device);
     }
 }

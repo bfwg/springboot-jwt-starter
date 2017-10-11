@@ -7,5 +7,3 @@ jwt:
   mobile_expires_in: 600 # 60 minutes
   secret: queenvictoria
   cookie: AUTH-TOKEN
-
-

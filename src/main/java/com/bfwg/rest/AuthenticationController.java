@@ -4,13 +4,11 @@ import com.bfwg.model.User;
 import com.bfwg.model.UserTokenState;
 import com.bfwg.security.TokenHelper;
 import com.bfwg.security.auth.JwtAuthenticationRequest;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
-import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,9 +36,6 @@ public class AuthenticationController {
     TokenHelper tokenHelper;
 
     @Autowired
-    ObjectMapper objectMapper;
-
-    @Autowired
     private AuthenticationManager authenticationManager;
 
     @Value("${jwt.expires_in}")
@@ -66,51 +61,49 @@ public class AuthenticationController {
                         authenticationRequest.getPassword()
                 )
         );
+
+        // Inject into security context
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        // token creation
         User user = (User)authentication.getPrincipal();
-
         String jws = tokenHelper.generateToken( user.getUsername(), device);
-
-        UserTokenState userTokenState;
-        if (device.isMobile() || device.isTablet()) {
-            userTokenState = new UserTokenState(jws, MOBILE_EXPIRES_IN);
-        } else {
-            // Create token auth Cookie
-            Cookie authCookie = new Cookie( TOKEN_COOKIE, ( jws ) );
-            authCookie.setPath( "/" );
-            authCookie.setHttpOnly( true );
-            authCookie.setMaxAge( EXPIRES_IN );
-            // Add cookie to response
-            response.addCookie( authCookie );
-            userTokenState = new UserTokenState(jws, EXPIRES_IN);
-        }
+        int expiresIn = device.isMobile() || device.isTablet() ? MOBILE_EXPIRES_IN : EXPIRES_IN;
+        // Add cookie to response
+        response.addCookie( createAuthCookie( jws, expiresIn ) );
         // Return the token
-        return ResponseEntity.ok(userTokenState);
+        return ResponseEntity.ok(new UserTokenState(jws, expiresIn));
     }
 
     @RequestMapping(value = "/refresh", method = RequestMethod.GET)
-    public ResponseEntity<?> refreshAuthenticationToken(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> refreshAuthenticationToken(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Device device
+            ) {
 
         String authToken = tokenHelper.getToken( request );
-        Device currentDevice = DeviceUtils.getCurrentDevice(request);
 
         if (authToken != null && tokenHelper.canTokenBeRefreshed(authToken)) {
             // TODO check user password last update
-            String refreshedToken = tokenHelper.refreshToken(authToken, currentDevice);
+            String refreshedToken = tokenHelper.refreshToken(authToken, device);
+            int expiresIn = device.isMobile() || device.isTablet() ? MOBILE_EXPIRES_IN : EXPIRES_IN;
 
-            Cookie authCookie = new Cookie( TOKEN_COOKIE, ( refreshedToken ) );
-            authCookie.setPath( "/" );
-            authCookie.setHttpOnly( true );
-//            authCookie.setMaxAge( EXPIRES_IN );
             // Add cookie to response
-            response.addCookie( authCookie );
+            response.addCookie( createAuthCookie( refreshedToken, expiresIn ) );
 
-            UserTokenState userTokenState = new UserTokenState(refreshedToken, EXPIRES_IN);
-            return ResponseEntity.ok(userTokenState);
+            return ResponseEntity.ok(new UserTokenState(refreshedToken, expiresIn));
         } else {
             UserTokenState userTokenState = new UserTokenState();
             return ResponseEntity.accepted().body(userTokenState);
         }
+    }
+
+    private Cookie createAuthCookie(String jwt, int expiresIn) {
+        Cookie authCookie = new Cookie( TOKEN_COOKIE, ( jwt ) );
+        authCookie.setPath( "/" );
+        authCookie.setHttpOnly( true );
+        authCookie.setMaxAge( expiresIn );
+        return authCookie;
     }
 }
