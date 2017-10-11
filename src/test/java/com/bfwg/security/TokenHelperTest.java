@@ -74,11 +74,11 @@ public class TokenHelperTest {
     public void mobileTokenShouldExpire() {
         Date beforeSomeTime = new Date(DateUtil.now().getTime() - 20 * 1000);
 
-        UserDetails userDetails = mock(User.class);
-        when(userDetails.getUsername()).thenReturn(TEST_USERNAME);
-
         when(timeProviderMock.now())
                 .thenReturn(beforeSomeTime);
+
+        UserDetails userDetails = mock(User.class);
+        when(userDetails.getUsername()).thenReturn(TEST_USERNAME);
 
         device.setMobile(true);
         final String mobileToken = createToken(device);
