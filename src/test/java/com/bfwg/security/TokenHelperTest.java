@@ -40,8 +40,8 @@ public class TokenHelperTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        ReflectionTestUtils.setField(tokenHelper, "EXPIRES_IN", 10L); // 10 sec
-        ReflectionTestUtils.setField(tokenHelper, "MOBILE_EXPIRES_IN", 20L); // 20 sec
+        ReflectionTestUtils.setField(tokenHelper, "EXPIRES_IN", 10); // 10 sec
+        ReflectionTestUtils.setField(tokenHelper, "MOBILE_EXPIRES_IN", 20); // 20 sec
         ReflectionTestUtils.setField(tokenHelper, "SECRET", "mySecret");
     }
 

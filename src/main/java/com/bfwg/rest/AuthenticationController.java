@@ -63,7 +63,7 @@ public class AuthenticationController {
         // token creation
         User user = (User)authentication.getPrincipal();
         String jws = tokenHelper.generateToken( user.getUsername(), device);
-        int expiresIn = device.isMobile() || device.isTablet() ? tokenHelper.MOBILE_EXPIRES_IN : tokenHelper.EXPIRES_IN;
+        int expiresIn = tokenHelper.getExpiredIn(device);
         // Add cookie to response
         response.addCookie( createAuthCookie( jws, expiresIn ) );
         // Return the token
@@ -84,7 +84,7 @@ public class AuthenticationController {
 
             // TODO check user password last update
             String refreshedToken = tokenHelper.refreshToken(authToken, device);
-            int expiresIn = device.isMobile() || device.isTablet() ? tokenHelper.MOBILE_EXPIRES_IN : tokenHelper.EXPIRES_IN;
+            int expiresIn = tokenHelper.getExpiredIn(device);
 
             // Add cookie to response
             response.addCookie( createAuthCookie( refreshedToken, expiresIn ) );
