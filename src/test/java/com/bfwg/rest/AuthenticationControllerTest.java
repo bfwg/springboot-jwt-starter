@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -61,6 +62,7 @@ public class AuthenticationControllerTest {
 
     @Before
     public void setup() {
+
         mvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .apply(springSecurity())
@@ -73,15 +75,16 @@ public class AuthenticationControllerTest {
         authority.setName("ROLE_USER");
         List<Authority> authorities = Arrays.asList(authority);
         user.setAuthorities(authorities);
+        user.setLastPasswordResetDate(new Timestamp(DateUtil.yesterday().getTime()));
         when(this.userDetailsService.loadUserByUsername(eq("testUser"))).thenReturn(user);
 
-        ReflectionTestUtils.setField(tokenHelper, "EXPIRES_IN", 10L); // 10 sec
-        ReflectionTestUtils.setField(tokenHelper, "MOBILE_EXPIRES_IN", 20L); // 20 sec
-        ReflectionTestUtils.setField(tokenHelper, "SECRET", "mySecret");
+
+        ReflectionTestUtils.setField(tokenHelper, "EXPIRES_IN", 100); // 100 sec
+        ReflectionTestUtils.setField(tokenHelper, "MOBILE_EXPIRES_IN", 200); // 200 sec
+        ReflectionTestUtils.setField(tokenHelper, "SECRET", "queenvictoria");
     }
 
     @Test
-    @WithMockUser(roles = "USER")
     public void shouldGetEmptyTokenStateWhenGivenValidOldToken() throws Exception {
         when(timeProviderMock.now())
                 .thenReturn(DateUtil.yesterday());
@@ -91,6 +94,29 @@ public class AuthenticationControllerTest {
 
     @Test
     @WithMockUser(roles = "USER")
+    public void shouldRefreshNotExpiredWebToken() throws Exception {
+        when(timeProviderMock.now())
+                .thenReturn(DateUtil.now());
+        device.setNormal(true);
+        String token = createToken(device);
+        String refreshedToken = tokenHelper.refreshToken(token, device);
+        this.mvc.perform(get("/auth/refresh").header("Authorization", "Bearer " + token))
+                .andExpect(content().json("{access_token:" + refreshedToken + ",expires_in:100}"));
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    public void shouldRefreshNotExpiredMobileToken() throws Exception {
+        when(timeProviderMock.now())
+                .thenReturn(DateUtil.now());
+
+        device.setMobile(true);
+        String token = createToken(device);
+        this.mvc.perform(get("/auth/refresh").header("Authorization", "Bearer " + token))
+                .andExpect(content().json("{access_token:" + token + ",expires_in:200}"));
+    }
+
+    @Test
     public void shouldNotRefreshExpiredWebToken() throws Exception {
         Date beforeSomeTime = new Date(DateUtil.now().getTime() - 15 * 1000);
         when(timeProviderMock.now())
@@ -102,7 +128,6 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
     public void shouldRefreshExpiredMobileToken() throws Exception {
         Date beforeSomeTime = new Date(DateUtil.now().getTime() - 15 * 1000);
         when(timeProviderMock.now())

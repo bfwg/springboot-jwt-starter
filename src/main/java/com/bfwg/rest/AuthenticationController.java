@@ -5,7 +5,6 @@ import com.bfwg.model.UserTokenState;
 import com.bfwg.security.TokenHelper;
 import com.bfwg.security.auth.JwtAuthenticationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
@@ -14,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +23,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.Principal;
 
 /**
  * Created by fan.jin on 2017-05-10.
@@ -38,14 +39,8 @@ public class AuthenticationController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Value("${jwt.expires_in}")
-    private int EXPIRES_IN;
-
-    @Value("${jwt.mobile_expires_in}")
-    private int MOBILE_EXPIRES_IN;
-
-    @Value("${jwt.cookie}")
-    private String TOKEN_COOKIE;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(
@@ -68,7 +63,7 @@ public class AuthenticationController {
         // token creation
         User user = (User)authentication.getPrincipal();
         String jws = tokenHelper.generateToken( user.getUsername(), device);
-        int expiresIn = device.isMobile() || device.isTablet() ? MOBILE_EXPIRES_IN : EXPIRES_IN;
+        int expiresIn = device.isMobile() || device.isTablet() ? tokenHelper.MOBILE_EXPIRES_IN : tokenHelper.EXPIRES_IN;
         // Add cookie to response
         response.addCookie( createAuthCookie( jws, expiresIn ) );
         // Return the token
@@ -79,15 +74,17 @@ public class AuthenticationController {
     public ResponseEntity<?> refreshAuthenticationToken(
             HttpServletRequest request,
             HttpServletResponse response,
-            Device device
+            Device device,
+            Principal principal
             ) {
 
         String authToken = tokenHelper.getToken( request );
 
-        if (authToken != null && tokenHelper.canTokenBeRefreshed(authToken)) {
+        if (authToken != null && principal != null) {
+
             // TODO check user password last update
             String refreshedToken = tokenHelper.refreshToken(authToken, device);
-            int expiresIn = device.isMobile() || device.isTablet() ? MOBILE_EXPIRES_IN : EXPIRES_IN;
+            int expiresIn = device.isMobile() || device.isTablet() ? tokenHelper.MOBILE_EXPIRES_IN : tokenHelper.EXPIRES_IN;
 
             // Add cookie to response
             response.addCookie( createAuthCookie( refreshedToken, expiresIn ) );
@@ -100,7 +97,7 @@ public class AuthenticationController {
     }
 
     private Cookie createAuthCookie(String jwt, int expiresIn) {
-        Cookie authCookie = new Cookie( TOKEN_COOKIE, ( jwt ) );
+        Cookie authCookie = new Cookie( tokenHelper.AUTH_COOKIE, ( jwt ) );
         authCookie.setPath( "/" );
         authCookie.setHttpOnly( true );
         authCookie.setMaxAge( expiresIn );

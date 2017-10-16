@@ -65,7 +65,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(
                         HttpMethod.GET,
                         "/",
-                        "/auth/**",
                         "/webjars/**",
                         "/*.html",
                         "/favicon.ico",
@@ -95,7 +94,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers(
                 HttpMethod.GET,
                 "/",
-                "/auth/**",
                 "/webjars/**",
                 "/*.html",
                 "/favicon.ico",
@@ -103,5 +101,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/**/*.css",
                 "/**/*.js"
             );
+
+        web.ignoring().antMatchers(
+                HttpMethod.POST,
+                "/auth/**"
+        );
     }
 }

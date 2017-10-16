@@ -13,6 +13,7 @@ import org.springframework.mobile.device.Device;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -130,13 +131,16 @@ public class TokenHelperTest {
         assertThat(tokenHelper.getAudienceFromToken(token)).isEqualTo(tokenHelper.AUDIENCE_MOBILE);
     }
 
-//    @Test
-//    public void changedPasswordCannotBeRefreshed() throws Exception {
-//        when(timeProviderMock.now())
-//                .thenReturn(DateUtil.now());
-//        String token = createToken();
-//        assertThat(jwtTokenUtil.canTokenBeRefreshed(token, DateUtil.tomorrow())).isFalse();
-//    }
+    @Test
+    public void changedPasswordCannotBeRefreshed() throws Exception {
+        when(timeProviderMock.now())
+                .thenReturn(DateUtil.now());
+
+        User user = mock(User.class);
+        when(user.getLastPasswordResetDate()).thenReturn(new Timestamp(DateUtil.tomorrow().getTime()));
+        String token = createToken(device);
+        assertThat(tokenHelper.validateToken(token, user)).isFalse();
+    }
 
     @Test
     public void canRefreshToken() throws Exception {
