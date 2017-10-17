@@ -1,5 +1,6 @@
 package com.bfwg.rest;
 
+import com.bfwg.common.DeviceProvider;
 import com.bfwg.model.User;
 import com.bfwg.model.UserTokenState;
 import com.bfwg.security.TokenHelper;
@@ -42,6 +43,9 @@ public class AuthenticationController {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private DeviceProvider deviceProvider;
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(
             @RequestBody JwtAuthenticationRequest authenticationRequest,
@@ -74,11 +78,12 @@ public class AuthenticationController {
     public ResponseEntity<?> refreshAuthenticationToken(
             HttpServletRequest request,
             HttpServletResponse response,
-            Device device,
             Principal principal
             ) {
 
         String authToken = tokenHelper.getToken( request );
+
+        Device device = deviceProvider.getCurrentDevice(request);
 
         if (authToken != null && principal != null) {
 

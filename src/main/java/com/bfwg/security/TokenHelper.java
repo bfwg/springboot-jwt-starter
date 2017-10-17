@@ -86,9 +86,10 @@ public class TokenHelper {
 
     public String refreshToken(String token, Device device) {
         String refreshedToken;
+        Date a = timeProvider.now();
         try {
             final Claims claims = this.getAllClaimsFromToken(token);
-            claims.setIssuedAt(timeProvider.now());
+            claims.setIssuedAt(a);
             refreshedToken = Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(generateExpirationDate(device))
