@@ -10,7 +10,7 @@ import javax.persistence.*;
  */
 
 @Entity
-@Table(name="Authority")
+@Table(name="AUTHORITY")
 public class Authority implements GrantedAuthority {
 
     @Id
