@@ -71,6 +71,7 @@ springboot-jwt-starter/
  │   │   │   │   └──UserController.java                         * REST controller to handle User related requests
  │   │   │   ├──security                                        * Security related folder(JWT, filters)
  │   │   │   │   ├──auth
+ │   │   │   │   │   ├──CsrfProtectionRequestMatcher.java       * config empty cookie requests to skip CSRF token check.
  │   │   │   │   │   ├──JwtAuthenticationRequest.java           * login request object, contains username and password
  │   │   │   │   │   ├──LogoutSuccess.java                      * controls the behavior after sign out.
  │   │   │   │   │   ├──RestAuthenticationEntryPoint.java       * handle auth exceptions, like invalid token etc.

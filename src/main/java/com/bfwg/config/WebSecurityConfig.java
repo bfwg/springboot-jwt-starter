@@ -1,12 +1,17 @@
 package com.bfwg.config;
 
 import com.bfwg.security.TokenHelper;
-import com.bfwg.security.auth.*;
+import com.bfwg.security.auth.CsrfProtectionRequestMatcher;
+import com.bfwg.security.auth.LogoutSuccess;
+import com.bfwg.security.auth.RestAuthenticationEntryPoint;
+import com.bfwg.security.auth.TokenAuthenticationFilter;
+import com.bfwg.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,7 +19,6 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -39,7 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private CustomUserDetailsService jwtUserDetailsService;
 
     @Autowired
     private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
@@ -48,8 +52,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private LogoutSuccess logoutSuccess;
 
     @Autowired
+    private CsrfProtectionRequestMatcher csrfProtectionRequestMatcher;
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+    @Autowired
     public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
-        auth.userDetailsService( userDetailsService )
+        auth.userDetailsService( jwtUserDetailsService )
             .passwordEncoder( passwordEncoder() );
     }
 
@@ -74,17 +87,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 ).permitAll()
                 .antMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated().and()
-                .addFilterBefore(new TokenAuthenticationFilter(tokenHelper, userDetailsService), BasicAuthenticationFilter.class)
+                .addFilterBefore(new TokenAuthenticationFilter(tokenHelper, jwtUserDetailsService), BasicAuthenticationFilter.class)
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout"))
                 .logoutSuccessHandler(logoutSuccess)
                 .deleteCookies(TOKEN_COOKIE);
 
-        // disable csrf for the login request
-        http
-                .csrf()
-                .ignoringAntMatchers("/auth/login")
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        http.csrf().requireCsrfProtectionMatcher(csrfProtectionRequestMatcher)
+        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
     }
 
 

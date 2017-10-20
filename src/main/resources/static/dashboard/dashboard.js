@@ -56,7 +56,7 @@ function DashboardCtrl($scope, $rootScope, $http, authService, isAuthenticated) 
 DashboardCtrl.resolve = {
 	isAuthenticated : function($q, $http) {
 		var deferred = $q.defer();
-		$http({method: 'GET', url: 'auth/refresh'})
+		$http({method: 'POST', url: 'auth/refresh'})
 		.success(function(data) {
 			deferred.resolve(data.access_token !== null);
 		})

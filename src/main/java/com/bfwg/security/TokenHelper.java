@@ -166,7 +166,7 @@ public class TokenHelper {
         /**
          *  Getting the token from Cookie store
          */
-        Cookie authCookie = getCookieValueByName( request, AUTH_COOKIE );
+        Cookie authCookie = getAuthCookieFromHeader( request );
         if ( authCookie != null ) {
             return authCookie.getValue();
         }
@@ -174,12 +174,20 @@ public class TokenHelper {
          *  Getting the token from Authentication header
          *  e.g Bearer your_token
          */
-        String authHeader = request.getHeader(AUTH_HEADER);
+        String authHeader = getAuthHeaderFromHeader( request );
         if ( authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }
 
         return null;
+    }
+
+    public Cookie getAuthCookieFromHeader( HttpServletRequest request ) {
+        return getCookieValueByName( request, AUTH_COOKIE );
+    }
+
+    public String getAuthHeaderFromHeader( HttpServletRequest request ) {
+        return request.getHeader(AUTH_HEADER);
     }
 
     /**

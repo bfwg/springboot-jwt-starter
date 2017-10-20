@@ -6,6 +6,7 @@ import com.bfwg.model.Authority;
 import com.bfwg.model.User;
 import com.bfwg.security.DeviceDummy;
 import com.bfwg.security.TokenHelper;
+import com.bfwg.service.impl.CustomUserDetailsService;
 import org.assertj.core.util.DateUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mobile.device.Device;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -34,7 +34,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 /**
@@ -55,7 +55,7 @@ public class AuthenticationControllerTest {
     private TokenHelper tokenHelper;
 
     @MockBean
-    private UserDetailsService userDetailsService;
+    private CustomUserDetailsService userDetailsService;
 
     @InjectMocks
     private AuthenticationController authenticationController;
@@ -101,7 +101,8 @@ public class AuthenticationControllerTest {
     public void shouldGetEmptyTokenStateWhenGivenValidOldToken() throws Exception {
         when(timeProviderMock.now())
                 .thenReturn(DateUtil.yesterday());
-        this.mvc.perform(get("/auth/refresh"))
+        this.mvc.perform(post("/auth/refresh")
+                .header("Authorization", "Bearer 123"))
                 .andExpect(content().json("{access_token:null,expires_in:null}"));
     }
 
@@ -117,7 +118,7 @@ public class AuthenticationControllerTest {
         String refreshedToken = tokenHelper.refreshToken(token, device);
         given(deviceProvider.getCurrentDevice(any()))
                 .willReturn(device);
-        this.mvc.perform(get("/auth/refresh")
+        this.mvc.perform(post("/auth/refresh")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(content().json("{access_token:" + refreshedToken + ",expires_in:100}"));
     }
@@ -132,7 +133,7 @@ public class AuthenticationControllerTest {
         String refreshedToken = tokenHelper.refreshToken(token, device);
         given(deviceProvider.getCurrentDevice(any()))
                 .willReturn(device);
-        this.mvc.perform(get("/auth/refresh")
+        this.mvc.perform(post("/auth/refresh")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(content().json("{access_token:" + refreshedToken + ",expires_in:200}"));
     }
@@ -144,7 +145,7 @@ public class AuthenticationControllerTest {
                 .thenReturn(beforeSomeTime);
         device.setNormal(true);
         String token = createToken(device);
-        this.mvc.perform(get("/auth/refresh")
+        this.mvc.perform(post("/auth/refresh")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(content().json("{access_token:null,expires_in:null}"));
     }
@@ -156,7 +157,7 @@ public class AuthenticationControllerTest {
                 .thenReturn(beforeSomeTime);
         device.setNormal(true);
         String token = createToken(device);
-        this.mvc.perform(get("/auth/refresh").header("Authorization", "Bearer " + token))
+        this.mvc.perform(post("/auth/refresh").header("Authorization", "Bearer " + token))
                 .andExpect(content().json("{access_token:null,expires_in:null}"));
     }
 
