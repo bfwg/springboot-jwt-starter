@@ -11,7 +11,6 @@ import org.springframework.mobile.device.Device;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
@@ -37,9 +36,6 @@ public class TokenHelper {
 
     @Value("${jwt.header}")
     private String AUTH_HEADER;
-
-    @Value("${jwt.cookie}")
-    public String AUTH_COOKIE;
 
     static final String AUDIENCE_UNKNOWN = "unknown";
     static final String AUDIENCE_WEB = "web";
@@ -164,17 +160,10 @@ public class TokenHelper {
 
     public String getToken( HttpServletRequest request ) {
         /**
-         *  Getting the token from Cookie store
-         */
-        Cookie authCookie = getCookieValueByName( request, AUTH_COOKIE );
-        if ( authCookie != null ) {
-            return authCookie.getValue();
-        }
-        /**
          *  Getting the token from Authentication header
          *  e.g Bearer your_token
          */
-        String authHeader = request.getHeader(AUTH_HEADER);
+        String authHeader = getAuthHeaderFromHeader( request );
         if ( authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }
@@ -182,24 +171,8 @@ public class TokenHelper {
         return null;
     }
 
-    /**
-     * Find a specific HTTP cookie in a request.
-     *
-     * @param request
-     *            The HTTP request object.
-     * @param name
-     *            The cookie name to look for.
-     * @return The cookie, or <code>null</code> if not found.
-     */
-    public Cookie getCookieValueByName(HttpServletRequest request, String name) {
-        if (request.getCookies() == null) {
-            return null;
-        }
-        for (int i = 0; i < request.getCookies().length; i++) {
-            if (request.getCookies()[i].getName().equals(name)) {
-                return request.getCookies()[i];
-            }
-        }
-        return null;
+    public String getAuthHeaderFromHeader( HttpServletRequest request ) {
+        return request.getHeader(AUTH_HEADER);
     }
+
 }

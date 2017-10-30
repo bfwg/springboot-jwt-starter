@@ -72,7 +72,6 @@ springboot-jwt-starter/
  │   │   │   ├──security                                        * Security related folder(JWT, filters)
  │   │   │   │   ├──auth
  │   │   │   │   │   ├──JwtAuthenticationRequest.java           * login request object, contains username and password
- │   │   │   │   │   ├──LogoutSuccess.java                      * controls the behavior after sign out.
  │   │   │   │   │   ├──RestAuthenticationEntryPoint.java       * handle auth exceptions, like invalid token etc.
  │   │   │   │   │   ├──TokenAuthenticationFilter.java          * the JWT token filter, configured in WebSecurityConfig
  │   │   │   │   │   └──TokenBasedAuthentication.java           * this is our custom Authentication class and it extends AbstractAuthenticationToken.
