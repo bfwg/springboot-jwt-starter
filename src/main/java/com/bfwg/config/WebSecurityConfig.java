@@ -1,13 +1,10 @@
 package com.bfwg.config;
 
 import com.bfwg.security.TokenHelper;
-import com.bfwg.security.auth.CsrfProtectionRequestMatcher;
-import com.bfwg.security.auth.LogoutSuccess;
 import com.bfwg.security.auth.RestAuthenticationEntryPoint;
 import com.bfwg.security.auth.TokenAuthenticationFilter;
 import com.bfwg.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,8 +19,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by fan.jin on 2016-10-19.
@@ -33,9 +34,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Value("${jwt.cookie}")
-    private String TOKEN_COOKIE;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -47,12 +45,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
-
-    @Autowired
-    private LogoutSuccess logoutSuccess;
-
-    @Autowired
-    private CsrfProtectionRequestMatcher csrfProtectionRequestMatcher;
 
     @Bean
     @Override
@@ -71,6 +63,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        List<RequestMatcher> csrfMethods = new ArrayList<>();
+        Arrays.asList( "POST", "PUT", "PATCH", "DELETE" )
+                .forEach( method -> csrfMethods.add( new AntPathRequestMatcher( "/**", method ) ) );
         http
                 .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS ).and()
                 .exceptionHandling().authenticationEntryPoint( restAuthenticationEntryPoint ).and()
@@ -87,14 +82,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 ).permitAll()
                 .antMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated().and()
-                .addFilterBefore(new TokenAuthenticationFilter(tokenHelper, jwtUserDetailsService), BasicAuthenticationFilter.class)
-                .logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout"))
-                .logoutSuccessHandler(logoutSuccess)
-                .deleteCookies(TOKEN_COOKIE);
+                .addFilterBefore(new TokenAuthenticationFilter(tokenHelper, jwtUserDetailsService), BasicAuthenticationFilter.class);
 
-        http.csrf().requireCsrfProtectionMatcher(csrfProtectionRequestMatcher)
-        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        http.csrf().disable();
     }
 
 

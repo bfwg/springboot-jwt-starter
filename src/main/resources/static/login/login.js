@@ -7,29 +7,30 @@ angular.module('myApp.login', ['ngRoute'])
   });
 }])
 
-.controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location',
-  function($scope, $rootScope, $http, $location) {
+.controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', 'AuthService',
+  function($scope, $rootScope, $http, $location, authService) {
   $scope.error = false;
   $rootScope.selectedTab = $location.path() || '/';
 
   $scope.credentials = {};
+
   $scope.login = function() {
     // We are using formLogin in our backend, so here we need to serialize our form data
     $http({
       url: 'auth/login',
       method: 'POST',
       data: $scope.credentials,
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: authService.createAuthorizationTokenHeader()
     })
-    .then(function(res) {
+    .success(function(res) {
       $rootScope.authenticated = true;
+      authService.setJwtToken(res.access_token);
       $location.path("#/");
       $rootScope.selectedTab = "/";
       $scope.error = false;
     })
     .catch(function() {
+      authService.removeJwtToken();
       $rootScope.authenticated = false;
       $scope.error = true;
     });

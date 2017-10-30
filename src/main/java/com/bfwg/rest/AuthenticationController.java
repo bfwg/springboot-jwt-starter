@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -71,8 +70,6 @@ public class AuthenticationController {
         User user = (User)authentication.getPrincipal();
         String jws = tokenHelper.generateToken( user.getUsername(), device);
         int expiresIn = tokenHelper.getExpiredIn(device);
-        // Add cookie to response
-        response.addCookie( createAuthCookie( jws, expiresIn ) );
         // Return the token
         return ResponseEntity.ok(new UserTokenState(jws, expiresIn));
     }
@@ -94,9 +91,6 @@ public class AuthenticationController {
             String refreshedToken = tokenHelper.refreshToken(authToken, device);
             int expiresIn = tokenHelper.getExpiredIn(device);
 
-            // Add cookie to response
-            response.addCookie( createAuthCookie( refreshedToken, expiresIn ) );
-
             return ResponseEntity.ok(new UserTokenState(refreshedToken, expiresIn));
         } else {
             UserTokenState userTokenState = new UserTokenState();
@@ -116,13 +110,5 @@ public class AuthenticationController {
     static class PasswordChanger {
         public String oldPassword;
         public String newPassword;
-    }
-
-    private Cookie createAuthCookie(String jwt, int expiresIn) {
-        Cookie authCookie = new Cookie( tokenHelper.AUTH_COOKIE, ( jwt ) );
-        authCookie.setPath( "/" );
-        authCookie.setHttpOnly( true );
-        authCookie.setMaxAge( expiresIn );
-        return authCookie;
     }
 }

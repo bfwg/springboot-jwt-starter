@@ -9,7 +9,7 @@ angular.module('myApp.dashboard', ['ngRoute'])
   });
 }]);
 
-function DashboardCtrl($scope, $rootScope, $http, authService, isAuthenticated) {
+function DashboardCtrl($scope, $rootScope, $http, isAuthenticated, authService) {
 	$rootScope.authenticated = isAuthenticated;
 
 	$scope.serverResponse = '';
@@ -44,9 +44,13 @@ function DashboardCtrl($scope, $rootScope, $http, authService, isAuthenticated) 
 	}
 
 	$scope.getAllUserInfo = function() {
-		$http.get('api/user/all')
-		.then(function(response) {
-			setResponse(response, true);
+    $http({
+      headers: authService.createAuthorizationTokenHeader(),
+      method: 'GET',
+      url: 'api/user/all'
+    })
+		.then(function(res) {
+			setResponse(res, true);
 		})
 		.catch(function(response) {
 			setResponse(response, false);
@@ -54,18 +58,30 @@ function DashboardCtrl($scope, $rootScope, $http, authService, isAuthenticated) 
 	}
 }
 DashboardCtrl.resolve = {
-	isAuthenticated : function($q, $http) {
+	isAuthenticated : function($q, $http, AuthService) {
+	  console.log('abc');
 		var deferred = $q.defer();
-		$http({method: 'POST', url: 'auth/refresh'})
-		.success(function(data) {
-			deferred.resolve(data.access_token !== null);
-		})
-		.error(function(data){
-			deferred.resolve(false); // you could optionally pass error data here
-		});
+		var oldToken = AuthService.getJwtToken();
+		if (oldToken !== null) {
+      $http({
+        headers: AuthService.createAuthorizationTokenHeader(),
+        method: 'POST',
+        url: 'auth/refresh'
+      })
+      .success(function(res) {
+        AuthService.setJwtToken(res.access_token);
+        deferred.resolve(res.access_token !== null);
+      })
+      .error(function(err){
+        AuthService.removeJwtToken();
+        deferred.resolve(false); // you could optionally pass error data here
+      });
+		} else {
+      deferred.resolve(false);
+		}
 		return deferred.promise;
 	}
 };
 
-DashboardCtrl.$inject = ['$scope', '$rootScope', '$http', 'AuthService', 'isAuthenticated'];
+DashboardCtrl.$inject = ['$scope', '$rootScope', '$http', 'isAuthenticated', 'AuthService'];
 
