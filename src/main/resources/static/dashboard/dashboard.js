@@ -59,7 +59,6 @@ function DashboardCtrl($scope, $rootScope, $http, isAuthenticated, authService) 
 }
 DashboardCtrl.resolve = {
 	isAuthenticated : function($q, $http, AuthService) {
-	  console.log('abc');
 		var deferred = $q.defer();
 		var oldToken = AuthService.getJwtToken();
 		if (oldToken !== null) {
