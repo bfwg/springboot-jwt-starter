@@ -25,8 +25,7 @@
 </p>
 
 > Token authentication is a more modern approach and is designed solve problems session IDs stored server-side can’t. Using tokens in place of session IDs can lower your server load, streamline permission management, and provide better tools for supporting a distributed or cloud-based infrastructure.
->
-> -- <cite>Stormpath</cite>
+
 
 ### Quick start
 **Make sure you have Maven and Java 1.7 or greater**
@@ -124,7 +123,6 @@ I'll accept pretty much everything so feel free to open a Pull-Request
 
 
 This project is inspried by
-- [Stormpath](https://stormpath.com/blog/token-auth-spa)
 - [Cerberus](https://github.com/brahalla/Cerberus)
 - [jwt-spring-security-demo](https://github.com/szerhusenBC/jwt-spring-security-demo)
 
