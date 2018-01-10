@@ -19,12 +19,24 @@
 [Spring boot](https://projects.spring.io/spring-boot/),
 [Json Web Token](https://jwt.io/)
 
+Sponsor
+-------
+
+
+| <img width="100" alt="Auth0 Logo" src="https://user-images.githubusercontent.com/83319/31722733-de95bbde-b3ea-11e7-96bf-4f4e8f915588.png">             | If you want to quickly add token based authentication to your apps, feel free to check out Auth0's SDKs and free plan at [auth0.com/overview](https://auth0.com/overview).                                                                  |
+|---------------------------------|:----------------------------------------------------------------------------------|
+
+___
+
+
 ### [Live Demo](http://jwt.fanjin.io)
 <p align="center">
     <img width="800" alt="Springboot JWT Starter" src="https://cloud.githubusercontent.com/assets/12819525/24693784/23c8af14-1994-11e7-9984-ebf612f740ec.png">
 </p>
 
-> Token authentication is a more modern approach and is designed solve problems session IDs stored server-side can’t. Using tokens in place of session IDs can lower your server load, streamline permission management, and provide better tools for supporting a distributed or cloud-based infrastructure.
+> Authentication is the most common scenario for using JWT. Once the user is logged in, each subsequent request will include the JWT, allowing the user to access routes, services, and resources that are permitted with that token. Single Sign On is a feature that widely uses JWT nowadays, because of its small overhead and its ability to be easily used across different domains.
+
+> -- <cite>Auth0</cite>
 
 
 ### Quick start
