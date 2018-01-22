@@ -28,7 +28,7 @@ Sponsor
       <img style="height: 42px; width: 42px;" alt="Auth0 Logo" src="https://user-images.githubusercontent.com/83319/31722733-de95bbde-b3ea-11e7-96bf-4f4e8f915588.png">
     </td>
     <td>
-      If you want to quickly add token based authentication to your apps, feel free to check out Auth0's SDKs and free plan at <a href="https://auth0.com/overview">auth0.com/overview</a>.
+      If you want to quickly add token based authentication to your apps, feel free to check out Auth0's SDKs and free plan at <a href="https://auth0.com/overview?utm_source=GHsponsor&utm_medium=GHsponsor&utm_campaign=springboot-jwt&utm_content=auth">auth0.com/overview</a>.
     </td>
   </tr>
 </table>
