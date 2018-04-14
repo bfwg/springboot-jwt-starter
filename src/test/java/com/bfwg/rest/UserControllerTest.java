@@ -40,7 +40,7 @@ public class UserControllerTest {
     @WithAnonymousUser
     public void shouldGetUnauthorizedWithoutRole() throws Exception {
 
-        this.mvc.perform(get("/user"))
+        this.mvc.perform(get("/userWithRole"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -61,14 +61,14 @@ public class UserControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void getAllUserSuccessWithAdminRole() throws Exception {
-        this.mvc.perform(get("/api/user/all"))
+        this.mvc.perform(get("/api/userWithRole/all"))
                 .andExpect(status().is2xxSuccessful());
     }
 
     @Test
     @WithMockUser(roles = "USER")
     public void getAllUserFailWithUserRole() throws Exception {
-        this.mvc.perform(get("/api/user/all"))
+        this.mvc.perform(get("/api/userWithRole/all"))
                 .andExpect(status().is4xxClientError());
     }
 }

@@ -6,7 +6,9 @@ import com.bfwg.model.Authority;
 import com.bfwg.model.User;
 import com.bfwg.security.DeviceDummy;
 import com.bfwg.security.TokenHelper;
+import com.bfwg.security.auth.JwtAuthenticationRequest;
 import com.bfwg.service.impl.CustomUserDetailsService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.util.DateUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +17,9 @@ import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestComponent;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -57,7 +61,7 @@ public class AuthenticationControllerTest {
     @MockBean
     private CustomUserDetailsService userDetailsService;
 
-    @InjectMocks
+    @Autowired
     private AuthenticationController authenticationController;
 
     @Autowired
@@ -85,6 +89,7 @@ public class AuthenticationControllerTest {
         List<Authority> authorities = Arrays.asList(authority);
         user.setAuthorities(authorities);
         user.setLastPasswordResetDate(new Timestamp(DateUtil.yesterday().getTime()));
+
         when(this.userDetailsService.loadUserByUsername(eq("testUser"))).thenReturn(user);
         MockitoAnnotations.initMocks(this);
 
@@ -95,6 +100,21 @@ public class AuthenticationControllerTest {
         device.setMobile(false);
         device.setNormal(false);
         device.setTablet(false);
+    }
+
+    @Test
+    public void shouldLoginAndGetJwt() throws Exception {
+        JwtAuthenticationRequest loginRequest = new JwtAuthenticationRequest();
+        loginRequest.setUsername("userWithRole");
+        loginRequest.setPassword("123");
+
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonLoginRequest = mapper.writeValueAsString(loginRequest);
+
+        this.mvc.perform(
+                post("/auth/login").contentType(MediaType.APPLICATION_JSON).content(jsonLoginRequest))
+                .andExpect(content().json("{access_token:null,expires_in:null}"));
+
     }
 
     @Test
@@ -141,8 +161,7 @@ public class AuthenticationControllerTest {
     @Test
     public void shouldNotRefreshExpiredWebToken() throws Exception {
         Date beforeSomeTime = new Date(DateUtil.now().getTime() - 15 * 1000);
-        when(timeProviderMock.now())
-                .thenReturn(beforeSomeTime);
+        when(timeProviderMock.now()).thenReturn(beforeSomeTime);
         device.setNormal(true);
         String token = createToken(device);
         this.mvc.perform(post("/auth/refresh")
@@ -153,8 +172,7 @@ public class AuthenticationControllerTest {
     @Test
     public void shouldRefreshExpiredMobileToken() throws Exception {
         Date beforeSomeTime = new Date(DateUtil.now().getTime() - 15 * 1000);
-        when(timeProviderMock.now())
-                .thenReturn(beforeSomeTime);
+        when(timeProviderMock.now()).thenReturn(beforeSomeTime);
         device.setNormal(true);
         String token = createToken(device);
         this.mvc.perform(post("/auth/refresh").header("Authorization", "Bearer " + token))

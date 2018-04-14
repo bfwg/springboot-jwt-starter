@@ -49,15 +49,10 @@ public class AuthenticationController {
     private DeviceProvider deviceProvider;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(
-            @RequestBody JwtAuthenticationRequest authenticationRequest,
-            HttpServletResponse response,
-            Device device
-    ) throws AuthenticationException, IOException {
+    public ResponseEntity<?> createAuthenticationToken( @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response, Device device) throws AuthenticationException {
 
         // Perform the security
-        final Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
+        final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                         authenticationRequest.getUsername(),
                         authenticationRequest.getPassword()
                 )
@@ -75,14 +70,9 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = "/refresh", method = RequestMethod.POST)
-    public ResponseEntity<?> refreshAuthenticationToken(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Principal principal
-            ) {
+    public ResponseEntity<?> refreshAuthenticationToken( HttpServletRequest request, HttpServletResponse response, Principal principal) {
 
         String authToken = tokenHelper.getToken( request );
-
         Device device = deviceProvider.getCurrentDevice(request);
 
         if (authToken != null && principal != null) {

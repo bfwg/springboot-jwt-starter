@@ -1,13 +1,13 @@
 package com.bfwg.rest;
 
 import com.bfwg.model.User;
+import com.bfwg.request.UserRequest;
 import com.bfwg.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -47,5 +47,23 @@ public class UserController {
     @PreAuthorize("hasRole('USER')")
     public User user(Principal user) {
         return this.userService.findByUsername(user.getName());
+    }
+
+    @PostMapping("/user/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void registerUser(@RequestBody UserRequest userRequest) {
+
+        //validate the userRequest.
+        User newUser = toUser(userRequest);
+        userService.save(newUser);
+    }
+
+    private User toUser(UserRequest userRequest) {
+        User user = new User();
+        user.setPassword(userRequest.password);
+        user.setEmail(userRequest.email);
+        user.setFirstName(userRequest.firstname);
+        user.setUsername(userRequest.email);
+        return user;
     }
 }

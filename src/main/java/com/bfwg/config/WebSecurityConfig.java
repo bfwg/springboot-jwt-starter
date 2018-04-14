@@ -80,7 +80,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // TokenAuthenticationFilter will ignore the below paths
         web.ignoring().antMatchers(
                 HttpMethod.POST,
-                "/auth/login"
+                "/auth/login",
+                "/api/user/register"
+
         );
         web.ignoring().antMatchers(
                 HttpMethod.GET,
