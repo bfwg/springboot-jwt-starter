@@ -6,9 +6,7 @@ import com.bfwg.model.Authority;
 import com.bfwg.model.User;
 import com.bfwg.security.DeviceDummy;
 import com.bfwg.security.TokenHelper;
-import com.bfwg.security.auth.JwtAuthenticationRequest;
 import com.bfwg.service.impl.CustomUserDetailsService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.util.DateUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,9 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestComponent;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -61,7 +57,7 @@ public class AuthenticationControllerTest {
     @MockBean
     private CustomUserDetailsService userDetailsService;
 
-    @Autowired
+    @InjectMocks
     private AuthenticationController authenticationController;
 
     @Autowired
@@ -100,21 +96,6 @@ public class AuthenticationControllerTest {
         device.setMobile(false);
         device.setNormal(false);
         device.setTablet(false);
-    }
-
-    @Test
-    public void shouldLoginAndGetJwt() throws Exception {
-        JwtAuthenticationRequest loginRequest = new JwtAuthenticationRequest();
-        loginRequest.setUsername("userWithRole");
-        loginRequest.setPassword("123");
-
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonLoginRequest = mapper.writeValueAsString(loginRequest);
-
-        this.mvc.perform(
-                post("/auth/login").contentType(MediaType.APPLICATION_JSON).content(jsonLoginRequest))
-                .andExpect(content().json("{access_token:null,expires_in:null}"));
-
     }
 
     @Test

@@ -1,8 +1,7 @@
 package com.bfwg.request;
 
-public class UserRequest {
 
-    public String firstname;
+public class LoginRequest {
     public String email;
     public String password;
 }

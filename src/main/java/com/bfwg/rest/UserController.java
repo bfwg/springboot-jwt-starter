@@ -1,7 +1,8 @@
 package com.bfwg.rest;
 
 import com.bfwg.model.User;
-import com.bfwg.request.UserRequest;
+import com.bfwg.request.LoginRequest;
+import com.bfwg.request.RegisterRequest;
 import com.bfwg.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,19 +52,21 @@ public class UserController {
 
     @PostMapping("/user/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public void registerUser(@RequestBody UserRequest userRequest) {
+    public void registerUser(@RequestBody RegisterRequest registerRequest) {
 
         //validate the userRequest.
-        User newUser = toUser(userRequest);
+        User newUser = toUser(registerRequest);
         userService.save(newUser);
     }
 
-    private User toUser(UserRequest userRequest) {
+    private User toUser(RegisterRequest registerRequest) {
         User user = new User();
-        user.setPassword(userRequest.password);
-        user.setEmail(userRequest.email);
-        user.setFirstName(userRequest.firstname);
-        user.setUsername(userRequest.email);
+        user.setPassword(registerRequest.password);
+        user.setEmail(registerRequest.email);
+        user.setFirstName(registerRequest.firstname);
+        user.setUsername(registerRequest.email);
+        user.setLastName(registerRequest.lastname);
+        user.setPhoneNumber(registerRequest.phoneNumber);
         return user;
     }
 }
