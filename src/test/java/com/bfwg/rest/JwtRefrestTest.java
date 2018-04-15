@@ -1,17 +1,17 @@
 package com.bfwg.rest;
 
-import com.bfwg.common.DeviceProvider;
-import com.bfwg.common.TimeProvider;
-import com.bfwg.model.Authority;
-import com.bfwg.model.User;
-import com.bfwg.security.DeviceDummy;
-import com.bfwg.security.TokenHelper;
-import com.bfwg.service.impl.CustomUserDetailsService;
+import com.bfwg.config.DeviceProvider;
+import com.bfwg.config.TimeProvider;
+import com.bfwg.converters.DefaultUserDetailsConverter;
+import com.bfwg.dto.DefaultUserDetails;
+import com.bfwg.remote.UserEntity;
+import com.bfwg.config.DeviceDummy;
+import com.bfwg.config.TokenHelper;
+import com.bfwg.service.UserService;
 import org.assertj.core.util.DateUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,9 +25,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -42,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class AuthenticationControllerTest {
+public class JwtRefrestTest {
 
     private MockMvc mvc;
 
@@ -55,10 +53,7 @@ public class AuthenticationControllerTest {
     private TokenHelper tokenHelper;
 
     @MockBean
-    private CustomUserDetailsService userDetailsService;
-
-    @InjectMocks
-    private AuthenticationController authenticationController;
+    private UserService userService;
 
     @Autowired
     private WebApplicationContext context;
@@ -77,16 +72,14 @@ public class AuthenticationControllerTest {
                 .apply(springSecurity())
                 .build();
 
-        User user = new User();
-        user.setUsername("username");
-        Authority authority = new Authority();
-        authority.setId(0L);
-        authority.setName("ROLE_USER");
-        List<Authority> authorities = Arrays.asList(authority);
-        user.setAuthorities(authorities);
-        user.setLastPasswordResetDate(new Timestamp(DateUtil.yesterday().getTime()));
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername("username");
+        userEntity.setRole("ROLE_USER");
+        userEntity.setLastPasswordResetDate(new Timestamp(DateUtil.yesterday().getTime()));
 
-        when(this.userDetailsService.loadUserByUsername(eq("testUser"))).thenReturn(user);
+        DefaultUserDetails defaultUserDetails = DefaultUserDetailsConverter.from(userEntity);
+
+        when(this.userService.findByUsername(eq("testUser"))).thenReturn(defaultUserDetails);
         MockitoAnnotations.initMocks(this);
 
         ReflectionTestUtils.setField(tokenHelper, "EXPIRES_IN", 100); // 100 sec

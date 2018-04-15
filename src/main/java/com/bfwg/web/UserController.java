@@ -1,18 +1,23 @@
-package com.bfwg.rest;
+package com.bfwg.web;
 
-import com.bfwg.model.User;
-import com.bfwg.request.LoginRequest;
-import com.bfwg.request.RegisterRequest;
+import com.bfwg.converters.DefaultUserDetailsConverter;
+import com.bfwg.dto.DefaultUserDetails;
+import com.bfwg.remote.UserEntity;
+import com.bfwg.web.request.RegisterRequest;
 import com.bfwg.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
+import static com.bfwg.converters.DefaultUserDetailsConverter.from;
+import static com.bfwg.converters.DefaultUserDetailsConverter.toUserResponseList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
@@ -28,14 +33,17 @@ public class UserController {
 
     @RequestMapping( method = GET, value = "/user/{userId}" )
     @PreAuthorize("hasRole('ADMIN')")
-    public User loadById( @PathVariable Long userId ) {
-        return this.userService.findById( userId );
+    public UserResponse loadById(@PathVariable String userId ) {
+        DefaultUserDetails user = userService.findById( userId );
+        return new UserResponse(user);
     }
 
     @RequestMapping( method = GET, value= "/user/all")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<User> loadAll() {
-        return this.userService.findAll();
+    public List<UserResponse> loadAll() {
+        List<DefaultUserDetails> userDetailsList = userService.findAll();
+        return toUserResponseList(userDetailsList);
+
     }
 
 
@@ -45,9 +53,10 @@ public class UserController {
      *  to access this endpoint.
      */
     @RequestMapping("/whoami")
-    @PreAuthorize("hasRole('USER')")
-    public User user(Principal user) {
-        return this.userService.findByUsername(user.getName());
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public UserResponse user(Principal user) {
+        DefaultUserDetails userDetails = userService.findByUsername(user.getName());
+        return new UserResponse(userDetails);
     }
 
     @PostMapping("/user/register")
@@ -55,18 +64,9 @@ public class UserController {
     public void registerUser(@RequestBody RegisterRequest registerRequest) {
 
         //validate the userRequest.
-        User newUser = toUser(registerRequest);
-        userService.save(newUser);
+        DefaultUserDetails newUser = from(registerRequest);
+        userService.create(newUser);
     }
 
-    private User toUser(RegisterRequest registerRequest) {
-        User user = new User();
-        user.setPassword(registerRequest.password);
-        user.setEmail(registerRequest.email);
-        user.setFirstName(registerRequest.firstname);
-        user.setUsername(registerRequest.email);
-        user.setLastName(registerRequest.lastname);
-        user.setPhoneNumber(registerRequest.phoneNumber);
-        return user;
-    }
+
 }

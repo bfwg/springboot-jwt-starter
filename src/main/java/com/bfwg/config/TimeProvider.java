@@ -1,4 +1,4 @@
-package com.bfwg.common;
+package com.bfwg.config;
 
 import org.springframework.stereotype.Component;
 

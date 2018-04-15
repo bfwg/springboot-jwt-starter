@@ -1,18 +1,15 @@
 package com.bfwg.rest;
 
-import com.bfwg.request.LoginRequest;
-import com.bfwg.request.RegisterRequest;
-import com.bfwg.security.TokenHelper;
-import com.bfwg.security.auth.JwtAuthenticationRequest;
-import com.bfwg.service.impl.CustomUserDetailsService;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.bfwg.config.TokenHelper;
+import com.bfwg.service.UserService;
+import com.bfwg.web.AuthenticationController;
+import com.bfwg.web.request.LoginRequest;
+import com.bfwg.web.request.RegisterRequest;
 import com.google.gson.Gson;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -31,28 +28,24 @@ import static org.junit.Assert.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-/**
- * Created by fanjin on 2017-09-01.
- */
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class LoginControllerTest {
 
-    static final Logger log = LoggerFactory.getLogger(LoginControllerTest.class);
     MockMvc mvc;
 
     @Autowired
     TokenHelper tokenHelper;
 
     @Autowired
-    CustomUserDetailsService userDetailsService;
+    UserService userDetailsService;
 
     @Autowired
     AuthenticationController authenticationController;
 
     @Autowired
     WebApplicationContext context;
-
 
 
     String jwt;
@@ -81,6 +74,7 @@ public class LoginControllerTest {
         regsiterNewUser();
 
         shouldLoginAndGetJwt();
+
     }
 
     public void regsiterNewUser() throws Exception {
@@ -94,7 +88,7 @@ public class LoginControllerTest {
 
         String userAsJson = convertToJson(registerRequest);
 
-        MvcResult resultActions = this.mvc.perform(
+        MvcResult resultActions = mvc.perform(
                         post("/api/user/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userAsJson))
@@ -108,9 +102,9 @@ public class LoginControllerTest {
 
 
     public void shouldLoginAndGetJwt() throws Exception {
-        JwtAuthenticationRequest loginRequest = new JwtAuthenticationRequest();
-        loginRequest.setUsername("w@w.com");
-        loginRequest.setPassword("123");
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.username = "w@w.com";
+        loginRequest.password ="123";
 
         String jsonLoginRequest = convertToJson(loginRequest);
 

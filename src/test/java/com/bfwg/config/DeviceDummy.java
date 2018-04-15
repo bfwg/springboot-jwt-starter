@@ -1,4 +1,4 @@
-package com.bfwg.security;
+package com.bfwg.config;
 
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DevicePlatform;
