@@ -1,8 +1,10 @@
 package com.bfwg.security;
 
 
-import com.bfwg.common.TimeProvider;
-import com.bfwg.model.User;
+import com.bfwg.config.DeviceDummy;
+import com.bfwg.config.TimeProvider;
+import com.bfwg.config.TokenHelper;
+import com.bfwg.dto.DefaultUserDetails;
 import org.assertj.core.util.DateUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,7 +63,7 @@ public class TokenHelperTest {
     public void mobileTokenShouldLiveLonger() {
         Date beforeSomeTime = new Date(DateUtil.now().getTime() - 15 * 1000);
 
-        UserDetails userDetails = mock(User.class);
+        UserDetails userDetails = mock(DefaultUserDetails.class);
         when(userDetails.getUsername()).thenReturn(TEST_USERNAME);
 
         when(timeProviderMock.now())
@@ -78,7 +80,7 @@ public class TokenHelperTest {
         when(timeProviderMock.now())
                 .thenReturn(beforeSomeTime);
 
-        UserDetails userDetails = mock(User.class);
+        UserDetails userDetails = mock(DefaultUserDetails.class);
         when(userDetails.getUsername()).thenReturn(TEST_USERNAME);
 
         device.setMobile(true);
@@ -136,7 +138,7 @@ public class TokenHelperTest {
         when(timeProviderMock.now())
                 .thenReturn(DateUtil.now());
 
-        User user = mock(User.class);
+        DefaultUserDetails user = mock(DefaultUserDetails.class);
         when(user.getLastPasswordResetDate()).thenReturn(new Timestamp(DateUtil.tomorrow().getTime()));
         String token = createToken(device);
         assertThat(tokenHelper.validateToken(token, user)).isFalse();

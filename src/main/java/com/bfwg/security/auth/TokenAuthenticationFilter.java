@@ -1,6 +1,7 @@
 package com.bfwg.security.auth;
 
-import com.bfwg.security.TokenHelper;
+import com.bfwg.config.TokenHelper;
+import com.bfwg.service.UserService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,11 +24,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private TokenHelper tokenHelper;
 
-    private UserDetailsService userDetailsService;
+    private UserService userService;
 
-    public TokenAuthenticationFilter(TokenHelper tokenHelper, UserDetailsService userDetailsService) {
+    public TokenAuthenticationFilter(TokenHelper tokenHelper, UserService userService) {
         this.tokenHelper = tokenHelper;
-        this.userDetailsService = userDetailsService;
+        this.userService = userService;
     }
 
 
@@ -46,7 +47,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             username = tokenHelper.getUsernameFromToken(authToken);
             if (username != null) {
                 // get user
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = userService.findByUsername(username);
                 if (tokenHelper.validateToken(authToken, userDetails)) {
                     // create authentication
                     TokenBasedAuthentication authentication = new TokenBasedAuthentication(userDetails);

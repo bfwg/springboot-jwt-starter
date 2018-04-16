@@ -1,14 +1,22 @@
 package com.bfwg.service;
 
-import com.bfwg.model.User;
+import com.bfwg.dto.DefaultUserDetails;
+import com.bfwg.remote.UserEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
 /**
- * Created by fan.jin on 2016-10-15.
+ * UserDetailsService is required by Spring Security
  */
-public interface UserService {
-    User findById(Long id);
-    User findByUsername(String username);
-    List<User> findAll ();
+public interface UserService extends UserDetailsService {
+    DefaultUserDetails findById(String id);
+    DefaultUserDetails findByUsername(String username);
+    List<DefaultUserDetails> findAll ();
+    void create(DefaultUserDetails user);
+    void update(DefaultUserDetails user);
+    void changePassword(String old, String newPwd);
+
+    DefaultUserDetails findByEmail(String email);
 }

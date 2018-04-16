@@ -1,7 +1,6 @@
-package com.bfwg.security;
+package com.bfwg.config;
 
-import com.bfwg.common.TimeProvider;
-import com.bfwg.model.User;
+import com.bfwg.dto.DefaultUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -37,10 +36,10 @@ public class TokenHelper {
     @Value("${jwt.header}")
     private String AUTH_HEADER;
 
-    static final String AUDIENCE_UNKNOWN = "unknown";
-    static final String AUDIENCE_WEB = "web";
-    static final String AUDIENCE_MOBILE = "mobile";
-    static final String AUDIENCE_TABLET = "tablet";
+    public static final String AUDIENCE_UNKNOWN = "unknown";
+    public static final String AUDIENCE_WEB = "web";
+    public static final String AUDIENCE_MOBILE = "mobile";
+    public static final String AUDIENCE_TABLET = "tablet";
 
     @Autowired
     TimeProvider timeProvider;
@@ -144,7 +143,7 @@ public class TokenHelper {
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        User user = (User) userDetails;
+        DefaultUserDetails user = (DefaultUserDetails) userDetails;
         final String username = getUsernameFromToken(token);
         final Date created = getIssuedAtDateFromToken(token);
         return (

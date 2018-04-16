@@ -1,4 +1,4 @@
-package com.bfwg.common;
+package com.bfwg.config;
 
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
