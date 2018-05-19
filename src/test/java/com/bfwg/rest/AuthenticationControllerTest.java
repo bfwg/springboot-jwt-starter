@@ -4,6 +4,7 @@ import com.bfwg.common.DeviceProvider;
 import com.bfwg.common.TimeProvider;
 import com.bfwg.model.Authority;
 import com.bfwg.model.User;
+import com.bfwg.model.UserRoleName;
 import com.bfwg.security.DeviceDummy;
 import com.bfwg.security.TokenHelper;
 import com.bfwg.service.impl.CustomUserDetailsService;
@@ -81,7 +82,7 @@ public class AuthenticationControllerTest {
         user.setUsername("username");
         Authority authority = new Authority();
         authority.setId(0L);
-        authority.setName("ROLE_USER");
+        authority.setName( UserRoleName.ROLE_USER );
         List<Authority> authorities = Arrays.asList(authority);
         user.setAuthorities(authorities);
         user.setLastPasswordResetDate(new Timestamp(DateUtil.yesterday().getTime()));

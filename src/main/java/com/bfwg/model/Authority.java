@@ -18,20 +18,21 @@ public class Authority implements GrantedAuthority {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @Enumerated( EnumType.STRING)
     @Column(name="name")
-    String name;
+    UserRoleName name;
 
     @Override
     public String getAuthority() {
-        return name;
+        return name.name();
     }
 
-    public void setName(String name) {
+    public void setName(UserRoleName name) {
         this.name = name;
     }
 
     @JsonIgnore
-    public String getName() {
+    public UserRoleName getName() {
         return name;
     }
 
