@@ -7,6 +7,7 @@ import com.bfwg.security.TokenHelper;
 import com.bfwg.security.auth.JwtAuthenticationRequest;
 import com.bfwg.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
@@ -39,6 +40,7 @@ public class AuthenticationController {
     @Autowired
     TokenHelper tokenHelper;
 
+    @Lazy
     @Autowired
     private AuthenticationManager authenticationManager;
 
