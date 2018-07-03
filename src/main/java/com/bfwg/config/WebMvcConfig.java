@@ -9,7 +9,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
-                .addResourceHandler("/files/**")
-                .addResourceLocations("file:/opt/jwt-demo/files/");
+                .addResourceHandler("/.well-known/**")
+                .addResourceLocations("file:/opt/jwt-demo/.well-known/");
     }
 }
