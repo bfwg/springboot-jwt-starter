@@ -1,3 +1,5 @@
+[\[中文版\]](README_cn.md)
+
 ```
                 _             _                 _       _          _         _             _
  ___ _ __  _ __(_)_ __   __ _| |__   ___   ___ | |_    (_)_      _| |_   ___| |_ __ _ _ __| |_ ___ _ __
@@ -19,14 +21,16 @@
 [Spring boot](https://projects.spring.io/spring-boot/),
 [Json Web Token](https://jwt.io/)
 
+
 ### [Live Demo](http://jwt.fanjin.io)
 <p align="center">
     <img width="800" alt="Springboot JWT Starter" src="https://cloud.githubusercontent.com/assets/12819525/24693784/23c8af14-1994-11e7-9984-ebf612f740ec.png">
 </p>
 
-> Token authentication is a more modern approach and is designed solve problems session IDs stored server-side can’t. Using tokens in place of session IDs can lower your server load, streamline permission management, and provide better tools for supporting a distributed or cloud-based infrastructure.
->
-> -- <cite>Stormpath</cite>
+> Authentication is the most common scenario for using JWT. Once the user is logged in, each subsequent request will include the JWT, allowing the user to access routes, services, and resources that are permitted with that token. Single Sign On is a feature that widely uses JWT nowadays, because of its small overhead and its ability to be easily used across different domains.
+
+> -- <cite>Auth0</cite>
+
 
 ### Quick start
 **Make sure you have Maven and Java 1.7 or greater**
@@ -72,7 +76,6 @@ springboot-jwt-starter/
  │   │   │   ├──security                                        * Security related folder(JWT, filters)
  │   │   │   │   ├──auth
  │   │   │   │   │   ├──JwtAuthenticationRequest.java           * login request object, contains username and password
- │   │   │   │   │   ├──LogoutSuccess.java                      * controls the behavior after sign out.
  │   │   │   │   │   ├──RestAuthenticationEntryPoint.java       * handle auth exceptions, like invalid token etc.
  │   │   │   │   │   ├──TokenAuthenticationFilter.java          * the JWT token filter, configured in WebSecurityConfig
  │   │   │   │   │   └──TokenBasedAuthentication.java           * this is our custom Authentication class and it extends AbstractAuthenticationToken.
@@ -125,7 +128,6 @@ I'll accept pretty much everything so feel free to open a Pull-Request
 
 
 This project is inspried by
-- [Stormpath](https://stormpath.com/blog/token-auth-spa)
 - [Cerberus](https://github.com/brahalla/Cerberus)
 - [jwt-spring-security-demo](https://github.com/szerhusenBC/jwt-spring-security-demo)
 

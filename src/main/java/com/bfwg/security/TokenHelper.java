@@ -1,6 +1,7 @@
 package com.bfwg.security;
 
 import com.bfwg.common.TimeProvider;
+import com.bfwg.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,7 +11,6 @@ import org.springframework.mobile.device.Device;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
@@ -26,19 +26,16 @@ public class TokenHelper {
     private String APP_NAME;
 
     @Value("${jwt.secret}")
-    private String SECRET;
+    public String SECRET;
 
     @Value("${jwt.expires_in}")
-    private long EXPIRES_IN;
+    private int EXPIRES_IN;
 
     @Value("${jwt.mobile_expires_in}")
-    private long MOBILE_EXPIRES_IN;
+    private int MOBILE_EXPIRES_IN;
 
     @Value("${jwt.header}")
     private String AUTH_HEADER;
-
-    @Value("${jwt.cookie}")
-    private String AUTH_COOKIE;
 
     static final String AUDIENCE_UNKNOWN = "unknown";
     static final String AUDIENCE_WEB = "web";
@@ -85,9 +82,10 @@ public class TokenHelper {
 
     public String refreshToken(String token, Device device) {
         String refreshedToken;
+        Date a = timeProvider.now();
         try {
             final Claims claims = this.getAllClaimsFromToken(token);
-            claims.setIssuedAt(timeProvider.now());
+            claims.setIssuedAt(a);
             refreshedToken = Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(generateExpirationDate(device))
@@ -141,38 +139,31 @@ public class TokenHelper {
         return new Date(timeProvider.now().getTime() + expiresIn * 1000);
     }
 
-    public Boolean canTokenBeRefreshed(String token) {
-        final Date created = getIssuedAtDateFromToken(token);
-        if (created == null) {
-            return false;
-        } else {
-            return true;
-        }
+    public int getExpiredIn(Device device) {
+        return device.isMobile() || device.isTablet() ? MOBILE_EXPIRES_IN : EXPIRES_IN;
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
+        User user = (User) userDetails;
         final String username = getUsernameFromToken(token);
-//        final Date created = getIssuedAtDateFromToken(token);
+        final Date created = getIssuedAtDateFromToken(token);
         return (
                 username != null &&
-                username.equals(userDetails.getUsername())
-//                        && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate())
+                username.equals(userDetails.getUsername()) &&
+                        !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate())
         );
+    }
+
+    private Boolean isCreatedBeforeLastPasswordReset(Date created, Date lastPasswordReset) {
+        return (lastPasswordReset != null && created.before(lastPasswordReset));
     }
 
     public String getToken( HttpServletRequest request ) {
         /**
-         *  Getting the token from Cookie store
-         */
-        Cookie authCookie = getCookieValueByName( request, AUTH_COOKIE );
-        if ( authCookie != null ) {
-            return authCookie.getValue();
-        }
-        /**
          *  Getting the token from Authentication header
          *  e.g Bearer your_token
          */
-        String authHeader = request.getHeader(AUTH_HEADER);
+        String authHeader = getAuthHeaderFromHeader( request );
         if ( authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }
@@ -180,24 +171,8 @@ public class TokenHelper {
         return null;
     }
 
-    /**
-     * Find a specific HTTP cookie in a request.
-     *
-     * @param request
-     *            The HTTP request object.
-     * @param name
-     *            The cookie name to look for.
-     * @return The cookie, or <code>null</code> if not found.
-     */
-    public Cookie getCookieValueByName(HttpServletRequest request, String name) {
-        if (request.getCookies() == null) {
-            return null;
-        }
-        for (int i = 0; i < request.getCookies().length; i++) {
-            if (request.getCookies()[i].getName().equals(name)) {
-                return request.getCookies()[i];
-            }
-        }
-        return null;
+    public String getAuthHeaderFromHeader( HttpServletRequest request ) {
+        return request.getHeader(AUTH_HEADER);
     }
+
 }
