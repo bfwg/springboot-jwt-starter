@@ -1,0 +1,9 @@
+version: "3.2"
+
+services:
+
+  springboot-jwt-starter:
+    container_name: springboot-jwt-starter
+    build: .
+    ports:
+      - "8080:8080"
