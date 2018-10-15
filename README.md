@@ -55,6 +55,12 @@ mvn spring-boot:run
 # - Admin - admin:123
 ```
 
+### Run with docker
+
+```
+docker-compose up --build -d
+```
+
 
 ### File Structure
 ```
