@@ -1,4 +1,4 @@
 language: java
-
-jdk:
-  - oraclejdk9
+sudo: true
+dist: trusty
+jdk: oraclejdk9
