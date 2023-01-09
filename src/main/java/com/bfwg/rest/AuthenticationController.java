@@ -19,9 +19,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bfwg.common.DeviceProvider;
@@ -52,7 +52,7 @@ public class AuthenticationController {
 	@Autowired
 	private DeviceProvider deviceProvider;
 
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	@PostMapping("/login")
 	public ResponseEntity<?> createAuthenticationToken(
 			@RequestBody JwtAuthenticationRequest authenticationRequest,
 			HttpServletResponse response,
@@ -75,7 +75,7 @@ public class AuthenticationController {
 		return ResponseEntity.ok(new UserTokenState(jws, expiresIn));
 	}
 
-	@RequestMapping(value = "/refresh", method = RequestMethod.POST)
+	@PostMapping("/refresh")
 	public ResponseEntity<?> refreshAuthenticationToken(
 			HttpServletRequest request,
 			HttpServletResponse response,
@@ -98,7 +98,7 @@ public class AuthenticationController {
 		}
 	}
 
-	@RequestMapping(value = "/change-password", method = RequestMethod.POST)
+	@PostMapping("/change-password")
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<?> changePassword(@RequestBody PasswordChanger passwordChanger) {
 		userService.changePassword(passwordChanger.oldPassword, passwordChanger.newPassword);
