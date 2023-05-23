@@ -73,7 +73,7 @@ springboot-jwt-starter/
  │   │   │   ├──model
  │   │   │   │   ├──Authority.java
  │   │   │   │   ├──UserTokenState.java                         * JWT model
- │   │   │   │   └──User.java                                   * our main User model.
+ │   │   │   │   └──User.java                                   * our main User model
  │   │   │   ├──repository                                      * repositories folder for accessing database
  │   │   │   │   └──UserRepository.java
  │   │   │   ├──rest                                            * rest endpoint folder
@@ -84,20 +84,20 @@ springboot-jwt-starter/
  │   │   │   │   │   ├──JwtAuthenticationRequest.java           * login request object, contains username and password
  │   │   │   │   │   ├──RestAuthenticationEntryPoint.java       * handle auth exceptions, like invalid token etc.
  │   │   │   │   │   ├──TokenAuthenticationFilter.java          * the JWT token filter, configured in WebSecurityConfig
- │   │   │   │   │   └──TokenBasedAuthentication.java           * this is our custom Authentication class and it extends AbstractAuthenticationToken.
- │   │   │   │   └──TokenHelper.java                             * token helper class
+ │   │   │   │   │   └──TokenBasedAuthentication.java           * this is our custom Authentication class and it extends AbstractAuthenticationToken
+ │   │   │   │   └──TokenHelper.java                            * token helper class
  │   │   │   ├──service
  │   │   │   │   ├──impl
- │   │   │   │   │   ├──CustomUserDetailsService.java           * custom UserDatilsService implementataion, tells formLogin() where to check username/password
+ │   │   │   │   │   ├──CustomUserDetailsService.java           * custom UserDetailsService implementation, tells formLogin() where to check username/password
  │   │   │   │   │   └──UserServiceImpl.java
  │   │   │   │   └──UserService.java
- │   │   │   └──Application.java                                * Application main enterance
+ │   │   │   └──Application.java                                * Application main class
  │   │   └──recources
- │   │       ├──static                                          * static assets are served here(Angular and html templates)
+ │   │       ├──static                                          * static assets are served here (Angular and html templates)
  │   │       ├──application.yml                                 * application variables are configured here
- │   │       └──import.sql                                      * h2 database query(table creation)
+ │   │       └──import.sql                                      * h2 database query (table creation)
  │   └──test                                                    * Junit test folder
- └──pom.xml                                                     * what maven uses to manage it's dependencies
+ └──pom.xml                                                     * what maven uses to manage its dependencies and configuration
 ```
 # Table of Contents
 * [File Structure](#file-structure)
