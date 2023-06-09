@@ -31,6 +31,7 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 			<exclusions>
 			        <exclusion>
+					<!-- bloated dependency -->
 					 <artifactId>tomcat-embed-el</artifactId>
 					 <groupId>org.apache.tomcat.embed</groupId>
 			         </exclusion>
@@ -45,6 +46,7 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 			<exclusions>
 				<exclusion>
+					<!-- bloated dependency -->
 					 <artifactId>txw2</artifactId>
 					 <groupId>org.glassfish.jaxb</groupId>
 				</exclusion>
