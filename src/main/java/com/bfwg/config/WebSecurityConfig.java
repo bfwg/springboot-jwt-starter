@@ -1,5 +1,7 @@
 package com.bfwg.config;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,7 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -27,7 +29,7 @@ import com.bfwg.service.impl.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
 	@Autowired
@@ -56,27 +58,28 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-				.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint).and()
-				.authorizeRequests()
-				.antMatchers(
-						HttpMethod.GET,
-						"/",
-						"/auth/**",
-						"/webjars/**",
-						"/*.html",
-						"/favicon.ico",
-						"/**/*.html",
-						"/**/*.css",
-						"/**/*.js")
-				.permitAll()
-				.antMatchers("/auth/**").permitAll()
-				.anyRequest().authenticated().and()
-				.addFilterBefore(new TokenAuthenticationFilter(tokenHelper, jwtUserDetailsService),
-						BasicAuthenticationFilter.class);
 
-		http.csrf().disable();
+		http
+				.addFilterBefore(new TokenAuthenticationFilter(tokenHelper, jwtUserDetailsService),
+						BasicAuthenticationFilter.class)
+				.authorizeHttpRequests(authorize -> authorize
+						.requestMatchers(
+								antMatcher(HttpMethod.GET, "/"),
+								antMatcher(HttpMethod.GET, "/auth/**"),
+								antMatcher(HttpMethod.GET, "/webjars/**"),
+								antMatcher(HttpMethod.GET, "/*.html"),
+								antMatcher(HttpMethod.GET, "/favicon.ico"),
+								antMatcher(HttpMethod.GET, "/**/*.html"),
+								antMatcher(HttpMethod.GET, "/**/*.css"),
+								antMatcher(HttpMethod.GET, "/**/*.js"))
+						.permitAll()
+						.requestMatchers("/auth/**").permitAll()
+						.anyRequest().authenticated())
+				.sessionManagement(sec -> sec.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.exceptionHandling(
+						exceptionHandler -> exceptionHandler.authenticationEntryPoint(restAuthenticationEntryPoint))
+				.csrf(csrf -> csrf.disable());
+
 		return http.build();
 	}
 
@@ -84,18 +87,16 @@ public class WebSecurityConfig {
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		// TokenAuthenticationFilter will ignore the below paths
 		return (web) -> {
-			web.ignoring().antMatchers(
-					HttpMethod.POST,
-					"/auth/login");
-			web.ignoring().antMatchers(
-					HttpMethod.GET,
-					"/",
-					"/webjars/**",
-					"/*.html",
-					"/favicon.ico",
-					"/**/*.html",
-					"/**/*.css",
-					"/**/*.js");
+			web.ignoring()
+					.requestMatchers(HttpMethod.POST, "/auth/login")
+					.requestMatchers(
+							antMatcher(HttpMethod.GET, "/"),
+							antMatcher(HttpMethod.GET, "/webjars/**"),
+							antMatcher(HttpMethod.GET, "/*.html"),
+							antMatcher(HttpMethod.GET, "/favicon.ico"),
+							antMatcher(HttpMethod.GET, "/**/*.html"),
+							antMatcher(HttpMethod.GET, "/**path/*.css"),
+							antMatcher(HttpMethod.GET, "/**path/*.js"));
 		};
 	}
 }
