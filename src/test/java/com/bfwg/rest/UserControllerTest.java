@@ -72,4 +72,3 @@ public class UserControllerTest {
                 .andExpect(status().is4xxClientError());
     }
 }
-

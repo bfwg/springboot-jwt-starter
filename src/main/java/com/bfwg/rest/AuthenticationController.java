@@ -37,70 +37,70 @@ import jakarta.servlet.http.HttpServletResponse;
 @RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController {
 
-	@Autowired
-	TokenHelper tokenHelper;
+    @Autowired
+    TokenHelper tokenHelper;
 
-	@Lazy
-	@Autowired
-	private AuthenticationManager authenticationManager;
+    @Lazy
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	@PostMapping("/login")
-	public ResponseEntity<?> createAuthenticationToken(
-			@RequestBody JwtAuthenticationRequest authenticationRequest,
-			HttpServletResponse response) throws AuthenticationException, IOException {
+    @PostMapping("/login")
+    public ResponseEntity<?> createAuthenticationToken(
+            @RequestBody JwtAuthenticationRequest authenticationRequest,
+            HttpServletResponse response) throws AuthenticationException, IOException {
 
-		// Perform the security
-		final Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(
-						authenticationRequest.getUsername(),
-						authenticationRequest.getPassword()));
+        // Perform the security
+        final Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        authenticationRequest.getUsername(),
+                        authenticationRequest.getPassword()));
 
-		// Inject into security context
-		SecurityContextHolder.getContext().setAuthentication(authentication);
+        // Inject into security context
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		// token creation
-		User user = (User) authentication.getPrincipal();
-		String jws = tokenHelper.generateToken(user.getUsername());
-		int expiresIn = tokenHelper.getExpiredIn();
-		// Return the token
-		return ResponseEntity.ok(new UserTokenState(jws, expiresIn));
-	}
+        // token creation
+        User user = (User) authentication.getPrincipal();
+        String jws = tokenHelper.generateToken(user.getUsername());
+        int expiresIn = tokenHelper.getExpiredIn();
+        // Return the token
+        return ResponseEntity.ok(new UserTokenState(jws, expiresIn));
+    }
 
-	@PostMapping("/refresh")
-	public ResponseEntity<?> refreshAuthenticationToken(
-			HttpServletRequest request,
-			HttpServletResponse response,
-			Principal principal) {
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshAuthenticationToken(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Principal principal) {
 
-		String authToken = tokenHelper.getToken(request);
+        String authToken = tokenHelper.getToken(request);
 
-		if (authToken != null && principal != null) {
+        if (authToken != null && principal != null) {
 
-			// TODO check user password last update
-			String refreshedToken = tokenHelper.refreshToken(authToken);
-			int expiresIn = tokenHelper.getExpiredIn();
+            // TODO check user password last update
+            String refreshedToken = tokenHelper.refreshToken(authToken);
+            int expiresIn = tokenHelper.getExpiredIn();
 
-			return ResponseEntity.ok(new UserTokenState(refreshedToken, expiresIn));
-		} else {
-			UserTokenState userTokenState = new UserTokenState();
-			return ResponseEntity.accepted().body(userTokenState);
-		}
-	}
+            return ResponseEntity.ok(new UserTokenState(refreshedToken, expiresIn));
+        } else {
+            UserTokenState userTokenState = new UserTokenState();
+            return ResponseEntity.accepted().body(userTokenState);
+        }
+    }
 
-	@PostMapping("/change-password")
-	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<?> changePassword(@RequestBody PasswordChanger passwordChanger) {
-		userService.changePassword(passwordChanger.oldPassword, passwordChanger.newPassword);
-		Map<String, String> result = new HashMap<>();
-		result.put("result", "success");
-		return ResponseEntity.accepted().body(result);
-	}
+    @PostMapping("/change-password")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> changePassword(@RequestBody PasswordChanger passwordChanger) {
+        userService.changePassword(passwordChanger.oldPassword, passwordChanger.newPassword);
+        Map<String, String> result = new HashMap<>();
+        result.put("result", "success");
+        return ResponseEntity.accepted().body(result);
+    }
 
-	static class PasswordChanger {
-		public String oldPassword;
-		public String newPassword;
-	}
+    static class PasswordChanger {
+        public String oldPassword;
+        public String newPassword;
+    }
 }

@@ -42,85 +42,85 @@ import com.bfwg.service.impl.CustomUserDetailsService;
 @SpringBootTest
 public class AuthenticationControllerTest {
 
-	private MockMvc mvc;
+    private MockMvc mvc;
 
-	@MockBean
-	private TimeProvider timeProviderMock;
+    @MockBean
+    private TimeProvider timeProviderMock;
 
-	private static final String TEST_USERNAME = "testUser";
+    private static final String TEST_USERNAME = "testUser";
 
-	@Autowired
-	private TokenHelper tokenHelper;
+    @Autowired
+    private TokenHelper tokenHelper;
 
-	@MockBean
-	private CustomUserDetailsService userDetailsService;
+    @MockBean
+    private CustomUserDetailsService userDetailsService;
 
-	@InjectMocks
-	private AuthenticationController authenticationController;
+    @InjectMocks
+    private AuthenticationController authenticationController;
 
-	@Autowired
-	private WebApplicationContext context;
+    @Autowired
+    private WebApplicationContext context;
 
-	@Before
-	public void setup() {
+    @Before
+    public void setup() {
 
-		mvc = MockMvcBuilders
-				.webAppContextSetup(context)
-				.apply(springSecurity())
-				.build();
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
 
-		User user = new User();
-		user.setUsername("username");
-		Authority authority = new Authority();
-		authority.setId(0L);
-		authority.setName(UserRoleName.ROLE_USER);
-		List<Authority> authorities = Arrays.asList(authority);
-		user.setAuthorities(authorities);
-		user.setLastPasswordResetDate(new Timestamp(DateUtil.yesterday().getTime()));
-		when(this.userDetailsService.loadUserByUsername(eq("testUser"))).thenReturn(user);
-		MockitoAnnotations.openMocks(this);
+        User user = new User();
+        user.setUsername("username");
+        Authority authority = new Authority();
+        authority.setId(0L);
+        authority.setName(UserRoleName.ROLE_USER);
+        List<Authority> authorities = Arrays.asList(authority);
+        user.setAuthorities(authorities);
+        user.setLastPasswordResetDate(new Timestamp(DateUtil.yesterday().getTime()));
+        when(this.userDetailsService.loadUserByUsername(eq("testUser"))).thenReturn(user);
+        MockitoAnnotations.openMocks(this);
 
-		ReflectionTestUtils.setField(tokenHelper, "EXPIRES_IN", 100); // 100 sec
-		ReflectionTestUtils.setField(tokenHelper, "SECRET",
-				"wb!.V.G]e&;4Q78&b,n[6F]PQg613!)-Gpy*CN{/[@LN.Z1Mn*aKH!*zg/pXLp/4");
+        ReflectionTestUtils.setField(tokenHelper, "EXPIRES_IN", 100); // 100 sec
+        ReflectionTestUtils.setField(tokenHelper, "SECRET",
+                "wb!.V.G]e&;4Q78&b,n[6F]PQg613!)-Gpy*CN{/[@LN.Z1Mn*aKH!*zg/pXLp/4");
 
-	}
+    }
 
-	@Test
-	public void shouldGetEmptyTokenStateWhenGivenValidOldToken() throws Exception {
-		when(timeProviderMock.now())
-				.thenReturn(DateUtil.yesterday());
-		this.mvc.perform(post("/auth/refresh")
-				.header("Authorization", "Bearer 123"))
-				.andExpect(content().json("{access_token:null,expires_in:null}"));
-	}
+    @Test
+    public void shouldGetEmptyTokenStateWhenGivenValidOldToken() throws Exception {
+        when(timeProviderMock.now())
+                .thenReturn(DateUtil.yesterday());
+        this.mvc.perform(post("/auth/refresh")
+                .header("Authorization", "Bearer 123"))
+                .andExpect(content().json("{access_token:null,expires_in:null}"));
+    }
 
-	@Test
-	@WithMockUser(roles = "USER")
-	public void shouldRefreshNotExpiredWebToken() throws Exception {
+    @Test
+    @WithMockUser(roles = "USER")
+    public void shouldRefreshNotExpiredWebToken() throws Exception {
 
-		given(timeProviderMock.now())
-				.willReturn(new Date(30L));
+        given(timeProviderMock.now())
+                .willReturn(new Date(30L));
 
-		String token = createToken();
-		String refreshedToken = tokenHelper.refreshToken(token);
-		this.mvc.perform(post("/auth/refresh")
-				.header("Authorization", "Bearer " + token))
-				.andExpect(content().json("{access_token:" + refreshedToken + ",expires_in:100}"));
-	}
+        String token = createToken();
+        String refreshedToken = tokenHelper.refreshToken(token);
+        this.mvc.perform(post("/auth/refresh")
+                .header("Authorization", "Bearer " + token))
+                .andExpect(content().json("{access_token:" + refreshedToken + ",expires_in:100}"));
+    }
 
-	@Test
-	public void shouldNotRefreshExpiredWebToken() throws Exception {
-		Date beforeSomeTime = new Date(DateUtil.now().getTime() - 15 * 1000);
-		when(timeProviderMock.now())
-				.thenReturn(beforeSomeTime);
-		String token = createToken();
-		this.mvc.perform(post("/auth/refresh")
-				.header("Authorization", "Bearer " + token))
-				.andExpect(content().json("{access_token:null,expires_in:null}"));
-	}
+    @Test
+    public void shouldNotRefreshExpiredWebToken() throws Exception {
+        Date beforeSomeTime = new Date(DateUtil.now().getTime() - 15 * 1000);
+        when(timeProviderMock.now())
+                .thenReturn(beforeSomeTime);
+        String token = createToken();
+        this.mvc.perform(post("/auth/refresh")
+                .header("Authorization", "Bearer " + token))
+                .andExpect(content().json("{access_token:null,expires_in:null}"));
+    }
 
-	private String createToken() {
-		return tokenHelper.generateToken(TEST_USERNAME);
-	}
+    private String createToken() {
+        return tokenHelper.generateToken(TEST_USERNAME);
+    }
 }
