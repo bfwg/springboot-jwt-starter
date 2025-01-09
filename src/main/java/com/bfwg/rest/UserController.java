@@ -21,32 +21,32 @@ import com.bfwg.service.UserService;
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
 
-    private UserService userService;
+	private UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+	public UserController(UserService userService) {
+		this.userService = userService;
+	}
 
-    @GetMapping("/user/{userId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public User loadById(@PathVariable Long userId) {
-        return this.userService.findById(userId);
-    }
+	@GetMapping("/user/{userId}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public User loadById(@PathVariable Long userId) {
+		return this.userService.findById(userId);
+	}
 
-    @GetMapping("/user/all")
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<User> loadAll() {
-        return this.userService.findAll();
-    }
+	@GetMapping("/user/all")
+	@PreAuthorize("hasRole('ADMIN')")
+	public List<User> loadAll() {
+		return this.userService.findAll();
+	}
 
-    /*
-     * We are not using userService.findByUsername here(we could), so it is good
-     * that we are making sure that the user has role "ROLE_USER" to access this
-     * endpoint.
-     */
-    @GetMapping("/whoami")
-    @PreAuthorize("hasRole('USER')")
-    public User user(Principal user) {
-        return this.userService.findByUsername(user.getName());
-    }
+	/*
+	 * We are not using userService.findByUsername here(we could), so it is good
+	 * that we are making sure that the user has role "ROLE_USER" to access this
+	 * endpoint.
+	 */
+	@GetMapping("/whoami")
+	@PreAuthorize("hasRole('USER')")
+	public User user(Principal user) {
+		return this.userService.findByUsername(user.getName());
+	}
 }

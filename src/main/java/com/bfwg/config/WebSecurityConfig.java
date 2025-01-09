@@ -32,71 +32,57 @@ import com.bfwg.service.impl.CustomUserDetailsService;
 @EnableMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
-    @Autowired
-    public PasswordEncoder passwordEncoder;
+	@Autowired
+	public PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private CustomUserDetailsService jwtUserDetailsService;
+	@Autowired
+	private CustomUserDetailsService jwtUserDetailsService;
 
-    @Autowired
-    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+	@Autowired
+	private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(jwtUserDetailsService)
-                .passwordEncoder(passwordEncoder);
-    }
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder);
+	}
 
-    @Autowired
-    TokenHelper tokenHelper;
+	@Autowired
+	TokenHelper tokenHelper;
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-            throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+			throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http
-                .addFilterBefore(new TokenAuthenticationFilter(tokenHelper, jwtUserDetailsService),
-                        BasicAuthenticationFilter.class)
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(
-                                antMatcher(HttpMethod.GET, "/"),
-                                antMatcher(HttpMethod.GET, "/auth/**"),
-                                antMatcher(HttpMethod.GET, "/webjars/**"),
-                                antMatcher(HttpMethod.GET, "/*.html"),
-                                antMatcher(HttpMethod.GET, "/favicon.ico"),
-                                antMatcher(HttpMethod.GET, "/**/*.html"),
-                                antMatcher(HttpMethod.GET, "/**/*.css"),
-                                antMatcher(HttpMethod.GET, "/**/*.js"))
-                        .permitAll()
-                        .requestMatchers("/auth/**").permitAll()
-                        .anyRequest().authenticated())
-                .sessionManagement(sec -> sec.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(
-                        exceptionHandler -> exceptionHandler.authenticationEntryPoint(restAuthenticationEntryPoint))
-                .csrf(csrf -> csrf.disable());
+		http.addFilterBefore(new TokenAuthenticationFilter(tokenHelper, jwtUserDetailsService),
+				BasicAuthenticationFilter.class)
+				.authorizeHttpRequests(authorize -> authorize
+						.requestMatchers(antMatcher(HttpMethod.GET, "/"), antMatcher(HttpMethod.GET, "/auth/**"),
+								antMatcher(HttpMethod.GET, "/webjars/**"), antMatcher(HttpMethod.GET, "/*.html"),
+								antMatcher(HttpMethod.GET, "/favicon.ico"), antMatcher(HttpMethod.GET, "/**/*.html"),
+								antMatcher(HttpMethod.GET, "/**/*.css"), antMatcher(HttpMethod.GET, "/**/*.js"))
+						.permitAll().requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
+				.sessionManagement(sec -> sec.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.exceptionHandling(
+						exceptionHandler -> exceptionHandler.authenticationEntryPoint(restAuthenticationEntryPoint))
+				.csrf(csrf -> csrf.disable());
 
-        return http.build();
-    }
+		return http.build();
+	}
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        // TokenAuthenticationFilter will ignore the below paths
-        return (web) -> {
-            web.ignoring()
-                    .requestMatchers(HttpMethod.POST, "/auth/login")
-                    .requestMatchers(
-                            antMatcher(HttpMethod.GET, "/"),
-                            antMatcher(HttpMethod.GET, "/webjars/**"),
-                            antMatcher(HttpMethod.GET, "/*.html"),
-                            antMatcher(HttpMethod.GET, "/favicon.ico"),
-                            antMatcher(HttpMethod.GET, "/**/*.html"),
-                            antMatcher(HttpMethod.GET, "/**path/*.css"),
-                            antMatcher(HttpMethod.GET, "/**path/*.js"));
-        };
-    }
+	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+		// TokenAuthenticationFilter will ignore the below paths
+		return (web) -> {
+			web.ignoring().requestMatchers(HttpMethod.POST, "/auth/login").requestMatchers(
+					antMatcher(HttpMethod.GET, "/"), antMatcher(HttpMethod.GET, "/webjars/**"),
+					antMatcher(HttpMethod.GET, "/*.html"), antMatcher(HttpMethod.GET, "/favicon.ico"),
+					antMatcher(HttpMethod.GET, "/**/*.html"), antMatcher(HttpMethod.GET, "/**path/*.css"),
+					antMatcher(HttpMethod.GET, "/**path/*.js"));
+		};
+	}
 }

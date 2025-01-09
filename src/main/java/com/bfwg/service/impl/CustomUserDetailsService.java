@@ -17,22 +17,22 @@ import com.bfwg.repository.UserRepository;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    protected final Log LOGGER = LogFactory.getLog(getClass());
+	protected final Log LOGGER = LogFactory.getLog(getClass());
 
-    private UserRepository userRepository;
+	private UserRepository userRepository;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+	public CustomUserDetailsService(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
-        } else {
-            return user;
-        }
-    }
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
+		} else {
+			return user;
+		}
+	}
 
 }

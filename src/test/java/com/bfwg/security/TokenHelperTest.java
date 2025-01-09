@@ -24,102 +24,95 @@ import com.bfwg.model.User;
  */
 public class TokenHelperTest {
 
-    private static final String TEST_USERNAME = "testUser";
+	private static final String TEST_USERNAME = "testUser";
 
-    @InjectMocks
-    private TokenHelper tokenHelper;
+	@InjectMocks
+	private TokenHelper tokenHelper;
 
-    @Mock
-    private TimeProvider timeProviderMock;
+	@Mock
+	private TimeProvider timeProviderMock;
 
-    @Before
-    public void init() {
-        MockitoAnnotations.openMocks(this);
+	@Before
+	public void init() {
+		MockitoAnnotations.openMocks(this);
 
-        ReflectionTestUtils.setField(tokenHelper, "EXPIRES_IN", 10); // 10 sec
-        ReflectionTestUtils.setField(tokenHelper, "SECRET",
-                "Y0[yCzX7Ym;${,[+hj*(E*erX:-%-JU=K!}Sp/m:$gZ.D[EW,fQec3Ha1.rwy)TX");
-    }
+		ReflectionTestUtils.setField(tokenHelper, "EXPIRES_IN", 10); // 10 sec
+		ReflectionTestUtils.setField(tokenHelper, "SECRET",
+				"Y0[yCzX7Ym;${,[+hj*(E*erX:-%-JU=K!}Sp/m:$gZ.D[EW,fQec3Ha1.rwy)TX");
+	}
 
-    @Test
-    public void testGenerateTokenGeneratesDifferentTokensForDifferentCreationDates() throws Exception {
-        when(timeProviderMock.now())
-                .thenReturn(DateUtil.yesterday())
-                .thenReturn(DateUtil.now());
+	@Test
+	public void testGenerateTokenGeneratesDifferentTokensForDifferentCreationDates() throws Exception {
+		when(timeProviderMock.now()).thenReturn(DateUtil.yesterday()).thenReturn(DateUtil.now());
 
-        final String token = createToken();
-        final String laterToken = createToken();
+		final String token = createToken();
+		final String laterToken = createToken();
 
-        assertThat(token).isNotEqualTo(laterToken);
-    }
+		assertThat(token).isNotEqualTo(laterToken);
+	}
 
-    @Test
-    public void tokenShouldExpire() {
-        Date beforeSomeTime = new Date(DateUtil.now().getTime() - 20 * 1000);
+	@Test
+	public void tokenShouldExpire() {
+		Date beforeSomeTime = new Date(DateUtil.now().getTime() - 20 * 1000);
 
-        when(timeProviderMock.now())
-                .thenReturn(beforeSomeTime);
+		when(timeProviderMock.now()).thenReturn(beforeSomeTime);
 
-        UserDetails userDetails = mock(User.class);
-        when(userDetails.getUsername()).thenReturn(TEST_USERNAME);
+		UserDetails userDetails = mock(User.class);
+		when(userDetails.getUsername()).thenReturn(TEST_USERNAME);
 
-        final String mobileToken = createToken();
-        assertThat(tokenHelper.validateToken(mobileToken, userDetails)).isFalse();
-    }
+		final String mobileToken = createToken();
+		assertThat(tokenHelper.validateToken(mobileToken, userDetails)).isFalse();
+	}
 
-    @Test
-    public void getUsernameFromToken() throws Exception {
-        when(timeProviderMock.now()).thenReturn(DateUtil.now());
+	@Test
+	public void getUsernameFromToken() throws Exception {
+		when(timeProviderMock.now()).thenReturn(DateUtil.now());
 
-        final String token = createToken();
+		final String token = createToken();
 
-        assertThat(tokenHelper.getUsernameFromToken(token)).isEqualTo(TEST_USERNAME);
-    }
+		assertThat(tokenHelper.getUsernameFromToken(token)).isEqualTo(TEST_USERNAME);
+	}
 
-    @Test
-    public void getCreatedDateFromToken() {
-        final Date now = DateUtil.now();
-        when(timeProviderMock.now()).thenReturn(now);
+	@Test
+	public void getCreatedDateFromToken() {
+		final Date now = DateUtil.now();
+		when(timeProviderMock.now()).thenReturn(now);
 
-        final String token = createToken();
+		final String token = createToken();
 
-        assertThat(tokenHelper.getIssuedAtDateFromToken(token)).isInSameMinuteWindowAs(now);
-    }
+		assertThat(tokenHelper.getIssuedAtDateFromToken(token)).isInSameMinuteWindowAs(now);
+	}
 
-    @Test
-    public void expiredTokenCannotBeRefreshed() {
-        when(timeProviderMock.now())
-                .thenReturn(DateUtil.yesterday());
+	@Test
+	public void expiredTokenCannotBeRefreshed() {
+		when(timeProviderMock.now()).thenReturn(DateUtil.yesterday());
 
-        String token = createToken();
-        tokenHelper.refreshToken(token);
-    }
+		String token = createToken();
+		tokenHelper.refreshToken(token);
+	}
 
-    @Test
-    public void changedPasswordCannotBeRefreshed() throws Exception {
-        when(timeProviderMock.now())
-                .thenReturn(DateUtil.now());
+	@Test
+	public void changedPasswordCannotBeRefreshed() throws Exception {
+		when(timeProviderMock.now()).thenReturn(DateUtil.now());
 
-        User user = mock(User.class);
-        when(user.getLastPasswordResetDate()).thenReturn(new Timestamp(DateUtil.tomorrow().getTime()));
-        String token = createToken();
-        assertThat(tokenHelper.validateToken(token, user)).isFalse();
-    }
+		User user = mock(User.class);
+		when(user.getLastPasswordResetDate()).thenReturn(new Timestamp(DateUtil.tomorrow().getTime()));
+		String token = createToken();
+		assertThat(tokenHelper.validateToken(token, user)).isFalse();
+	}
 
-    @Test
-    public void canRefreshToken() throws Exception {
-        when(timeProviderMock.now())
-                .thenReturn(DateUtil.now())
-                .thenReturn(DateUtil.tomorrow());
-        String firstToken = createToken();
-        String refreshedToken = tokenHelper.refreshToken(firstToken);
-        Date firstTokenDate = tokenHelper.getIssuedAtDateFromToken(firstToken);
-        Date refreshedTokenDate = tokenHelper.getIssuedAtDateFromToken(refreshedToken);
-        assertThat(firstTokenDate).isBefore(refreshedTokenDate);
-    }
+	@Test
+	public void canRefreshToken() throws Exception {
+		when(timeProviderMock.now()).thenReturn(DateUtil.now()).thenReturn(DateUtil.tomorrow());
+		String firstToken = createToken();
+		String refreshedToken = tokenHelper.refreshToken(firstToken);
+		Date firstTokenDate = tokenHelper.getIssuedAtDateFromToken(firstToken);
+		Date refreshedTokenDate = tokenHelper.getIssuedAtDateFromToken(refreshedToken);
+		assertThat(firstTokenDate).isBefore(refreshedTokenDate);
+	}
 
-    private String createToken() {
-        return tokenHelper.generateToken(TEST_USERNAME);
-    }
+	private String createToken() {
+		return tokenHelper.generateToken(TEST_USERNAME);
+	}
 
 }
