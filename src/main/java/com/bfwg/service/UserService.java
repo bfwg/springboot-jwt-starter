@@ -8,11 +8,11 @@ import com.bfwg.model.User;
  * Created by fan.jin on 2016-10-15.
  */
 public interface UserService {
-    User findById(Long id);
+	User findById(Long id);
 
-    User findByUsername(String username);
+	User findByUsername(String username);
 
-    List<User> findAll();
+	List<User> findAll();
 
-    void changePassword(String oldPassword, String newPassword);
+	void changePassword(String oldPassword, String newPassword);
 }
