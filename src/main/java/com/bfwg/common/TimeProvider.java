@@ -11,9 +11,9 @@ import java.util.Date;
 @Component
 public class TimeProvider implements Serializable {
 
-    private static final long serialVersionUID = -3301695478208950415L;
+	private static final long serialVersionUID = -3301695478208950415L;
 
-    public Date now() {
-        return new Date();
-    }
+	public Date now() {
+		return new Date();
+	}
 }

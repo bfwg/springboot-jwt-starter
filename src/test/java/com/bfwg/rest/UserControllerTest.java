@@ -23,53 +23,44 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class UserControllerTest {
 
-    private MockMvc mvc;
+	private MockMvc mvc;
 
-    @Autowired
-    private WebApplicationContext context;
+	@Autowired
+	private WebApplicationContext context;
 
-    @Before
-    public void setup() {
-        mvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(springSecurity())
-                .build();
-    }
+	@Before
+	public void setup() {
+		mvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+	}
 
-    @Test
-    @WithAnonymousUser
-    public void shouldGetUnauthorizedWithoutRole() throws Exception {
+	@Test
+	@WithAnonymousUser
+	public void shouldGetUnauthorizedWithoutRole() throws Exception {
 
-        this.mvc.perform(get("/user"))
-                .andExpect(status().isUnauthorized());
-    }
+		this.mvc.perform(get("/user")).andExpect(status().isUnauthorized());
+	}
 
-    @Test
-    @WithMockUser(roles = "USER")
-    public void getPersonsSuccessfullyWithUserRole() throws Exception {
-        this.mvc.perform(get("/api/whoami"))
-                .andExpect(status().is2xxSuccessful());
-    }
+	@Test
+	@WithMockUser(roles = "USER")
+	public void getPersonsSuccessfullyWithUserRole() throws Exception {
+		this.mvc.perform(get("/api/whoami")).andExpect(status().is2xxSuccessful());
+	}
 
-    @Test
-    @WithAnonymousUser
-    public void getPersonsFailWithAnonymousUser() throws Exception {
-        this.mvc.perform(get("/api/whoami"))
-                .andExpect(status().is4xxClientError());
-    }
+	@Test
+	@WithAnonymousUser
+	public void getPersonsFailWithAnonymousUser() throws Exception {
+		this.mvc.perform(get("/api/whoami")).andExpect(status().is4xxClientError());
+	}
 
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    public void getAllUserSuccessWithAdminRole() throws Exception {
-        this.mvc.perform(get("/api/user/all"))
-                .andExpect(status().is2xxSuccessful());
-    }
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	public void getAllUserSuccessWithAdminRole() throws Exception {
+		this.mvc.perform(get("/api/user/all")).andExpect(status().is2xxSuccessful());
+	}
 
-    @Test
-    @WithMockUser(roles = "USER")
-    public void getAllUserFailWithUserRole() throws Exception {
-        this.mvc.perform(get("/api/user/all"))
-                .andExpect(status().is4xxClientError());
-    }
+	@Test
+	@WithMockUser(roles = "USER")
+	public void getAllUserFailWithUserRole() throws Exception {
+		this.mvc.perform(get("/api/user/all")).andExpect(status().is4xxClientError());
+	}
 }
-

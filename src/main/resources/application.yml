@@ -5,4 +5,4 @@ jwt:
   header: Authorization
   expires_in: 300 # 5 minutes
   mobile_expires_in: 600 # 10 minutes
-  secret: queenvictoria
+  secret: p2H(++:$j*xKfKvK6n5k=},@@]CWkbj7d0iQ%6/;0}x6?[wNWR,$=0/HHx*&pJAq
