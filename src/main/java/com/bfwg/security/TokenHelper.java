@@ -28,7 +28,7 @@ public class TokenHelper {
 	private String APP_NAME;
 
 	@Value("${jwt.secret}")
-	public String SECRET;
+	private String SECRET;
 
 	@Value("${jwt.expires_in}")
 	private int EXPIRES_IN;
@@ -40,6 +40,27 @@ public class TokenHelper {
 	TimeProvider timeProvider;
 
 	private MacAlgorithm SIGNATURE_ALGORITHM = Jwts.SIG.HS512;
+
+	private static final java.util.Set<String> KNOWN_WEAK_SECRETS = java.util.Set.of(
+		"", "secret", "changeme", "jwt_secret", "mySecretKey",
+		"p2H(++:$j*xKfKvK6n5k=},@@]CWkbj7d0iQ%6/;0}x6?[wNWR,$=0/HHx*&pJAq"
+	);
+
+	@jakarta.annotation.PostConstruct
+	public void validateSecret() {
+		if (SECRET == null || KNOWN_WEAK_SECRETS.contains(SECRET)) {
+			throw new IllegalStateException(
+				"jwt.secret is not set or uses a known default value. " +
+				"Set it via the JWT_SECRET environment variable. " +
+				"Generate a secure key: openssl rand -base64 64"
+			);
+		}
+		if (SECRET.length() < 32) {
+			throw new IllegalStateException(
+				"jwt.secret must be at least 32 characters. Current length: " + SECRET.length()
+			);
+		}
+	}
 
 	public String getUsernameFromToken(String token) {
 		String username;
